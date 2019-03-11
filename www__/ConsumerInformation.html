@@ -1,0 +1,591 @@
+﻿
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" />
+    <title>User Dashboard</title>
+    <!-- CSS  -->
+    <script type="text/javascript" src="assets/js/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="assets/js/materialize.js"></script>
+    <script type="text/javascript" src="assets/js/init.js"></script>
+    <link href="assets/css/custom.css" rel="stylesheet" type="text/css" />
+    <link href="assets/css/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection" />
+    <link href="assets/css/ghpages-materialize.css" type="text/css" rel="stylesheet" media="screen,projection" />
+    <link href="assets/css/style.css" type="text/css" rel="stylesheet" media="screen,projection" />
+    <link rel="stylesheet" type="text/css" href="assets/css/font-awesome.min.css" media="all" />
+    <script type="text/javascript" src="cordova.js"></script>
+
+    <style type="text/css">
+        .fontTital {
+            font-size: 20px;
+            color: yellow;
+        }
+
+        .card .card-content {
+            padding: 4px !important;
+        }
+
+        #toast-container {
+            background-color: #F44336 !important;
+        }
+
+        .toast {
+            background-color: #F44336 !important;
+            font-size: small;
+        }
+
+        .fontTital {
+            font-size: 20px;
+            color: yellow;
+        }
+
+        .card .card-content {
+            padding: 4px !important;
+        }
+
+        .carousel {
+            max-height: 50px;
+        }
+
+        .carousel-item {
+            max-width: 60px;
+        }
+
+        .row {
+            margin-bottom: 0px;
+        }
+
+        input:not([type]), input[type=text], input[type=password], input[type=email], input[type=url], input[type=time], input[type=date], input[type=datetime], input[type=datetime-local], input[type=tel], input[type=number], input[type=search], textarea.materialize-textarea {
+            margin: 0 0 0 0 !important;
+            border-bottom: 1px solid #e57373;
+        }
+
+            input:not([type]).valid, input:not([type]):focus.valid, input[type=text].valid, input[type=text]:focus.valid, input[type=password].valid, input[type=password]:focus.valid, input[type=email].valid, input[type=email]:focus.valid, input[type=url].valid, input[type=url]:focus.valid, input[type=time].valid, input[type=time]:focus.valid, input[type=date].valid, input[type=date]:focus.valid, input[type=datetime].valid, input[type=datetime]:focus.valid, input[type=datetime-local].valid, input[type=datetime-local]:focus.valid, input[type=tel].valid, input[type=tel]:focus.valid, input[type=number].valid, input[type=number]:focus.valid, input[type=search].valid, input[type=search]:focus.valid, textarea.materialize-textarea.valid, textarea.materialize-textarea:focus.valid {
+                border-bottom: 1px solid #e57373;
+                box-shadow: 0 1px 0 0 #e57373;
+            }
+
+        [type="checkbox"] + label:before, [type="checkbox"]:not(.filled-in) + label:after {
+            border: 2px solid #e57373;
+        }
+
+        [type="checkbox"]:checked + label:before {
+            border-right: 2px solid #e57373;
+            border-bottom: 2px solid #e57373;
+        }
+
+        [type="checkbox"] + label {
+            padding-left: 30px;
+            line-height: 25px;
+            font-size: 0.9rem;
+        }
+
+        .card .card-content {
+            padding: 4px !important;
+        }
+
+        td, th {
+            padding: 3px 3px;
+        }
+
+        .card {
+            border-radius: 10px;
+        }
+
+        .fa {
+            color: #e57373;
+        }
+    </style>
+    <script type="text/javascript">
+        // var webIP = 'http://192.168.1.22/jiwb/';//Junaid
+        //var webIP = 'http://192.168.0.108/jiwb/'; //Hotel
+        //var webIP = 'http://192.168.1.25/jiwb/';    //Self
+        var UserName = localStorage.getItem("UserName");
+        var ConsumerID = localStorage.getItem("ConsumerID");
+        var imageDataFromCamera;
+        var pSearchKeyword = localStorage.getItem('SearchKeyWord');
+        var pSearchType = localStorage.getItem('pSearchType');
+        var RoleID = localStorage.getItem("RoleID");
+        var currentConnectionId;
+        var _GetLastReading;
+        var _getPrevReading;
+        var finaldate;
+        var pDoorLock = false;
+        var pMeterStatus = false;
+        var ischecked;
+        var error = "";
+        $(function () {
+            $("#EnterCurrentWMReading").val('');
+            $("#txtDoorLock").val('');
+            $("#lblUserName").text(UserName);
+            $('.carousel.carousel-slider').carousel({ full_width: true });
+            $("#btnLogout").click(function () {
+                $('#modal1').modal({});
+            });
+            $("#btnOut").click(function () {
+                location.href = "index.html";
+            });
+            $("#btnClose").click(function () {
+                $('#sidenav-overlay').trigger('click');
+            });
+            $("#lOut").click(function () {
+                $('#modal1').modal({});
+            });
+            //$("#ConsumerInfo").hide();
+            prc_device_consumer_search_by_id(pSearchKeyword, pSearchType);
+            $("#btnSubmit").click(function () {
+                validError();
+
+            });
+            $('input.example').on('change', function () {
+                $('input.example').not(this).prop('checked', false);
+            });
+
+            GetLastReading(_GetLastReading);
+
+            var currentTime = new Date();
+            var month = currentTime.getMonth() + 1;
+            var day = currentTime.getDate();
+            var year = currentTime.getFullYear();
+            var time = currentTime.getHours() + ":" + currentTime.getMinutes() + ":" + currentTime.getSeconds();
+            finaldate = year + "-" + month + "-" + day +" "+ time;
+
+            $("#chkDoorLock").change(function () {
+                ischecked = $(this).is(':checked');
+                if (!ischecked) {
+                    $("#divCurrentWMReading").show();
+                    $("#divDoorLock").hide();
+                    $("#EnterCurrentWMReading").val('');
+                    $("#txtDoorLock").val('');
+                    pDoorLock = false;
+                    pMeterStatus = false;
+                }
+                else {
+                    $("#divDoorLock").show();
+                    $("#divCurrentWMReading").hide();
+                    pDoorLock = true;
+                    pMeterStatus = false;
+                    $("#EnterCurrentWMReading").val('');
+                    $("#txtDoorLock").val('');
+                }
+            });
+            $("#chkMeterStatus").change(function () {
+                ischecked = $(this).is(':checked');
+                if (!ischecked) {
+                    $("#divCurrentWMReading").show();
+                    $("#divDoorLock").hide();
+                    $("#EnterCurrentWMReading").val(''); 
+                    $("#txtDoorLock").val('');
+                    pDoorLock = false;
+                    pMeterStatus = false;
+                }
+                else {
+                    $("#divDoorLock").show();
+                    $("#divCurrentWMReading").hide();
+                    pMeterStatus = true;
+                    pDoorLock = false;
+                    $("#EnterCurrentWMReading").val('');
+                    $("#txtDoorLock").val('');
+                }
+            });
+
+        });
+        //document.addEventListener("deviceready", onDeviceReady, false);
+
+        //function onDeviceReady() {
+
+        //}
+
+        prc_device_consumer_search_by_id = function (pSearchKeyword, pSearchType) {
+
+            //postData = {
+            //    pSearchKeyword: pSearchKeyword, pSearchType: pSearchType
+            //};
+            $.ajax({
+                async: false,
+                type: "POST",
+                url: webIP + "JIWB_Service.asmx/prc_device_consumer_search_by_id",
+                data: JSON.stringify({ pSearchKeyword: pSearchKeyword, pSearchType: pSearchType }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (msg) {
+                    var obj = JSON.parse(msg.d);
+                    _GetLastReading = obj[0].ConnectionId;
+                    console.log(msg.d);
+                    if (obj.length > 0) {
+
+                        fillControls(msg);
+                    }
+                    else {
+                        Materialize.toast('Invalid Search Keyword', 4000);
+                        $("#lblLogError").html(error);
+                    }
+                },
+                error: function (requestObject, error, errorThrown) {
+                }
+            });
+        }
+
+        GetLastReading = function (ConnectionId) {
+
+            //postData = {
+            //    pSearchKeyword: pSearchKeyword, pSearchType: pSearchType
+            //};
+            $.ajax({
+                async: false,
+                type: "POST",
+                url: webIP + "JIWB_Service.asmx/GetLastReading",
+                data: JSON.stringify({ ConnectionId: ConnectionId }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (msg) {
+                    var obj = JSON.parse(msg.d);
+                    _getPrevReading = obj[0].Reading;
+                    if (obj.length > 0) {
+
+                    }
+                    else {
+                        Materialize.toast('Invalid Search Keyword', 4000);
+                        $("#lblLogError").html(error);
+                    }
+                },
+                error: function (requestObject, error, errorThrown) {
+                }
+            });
+        }
+
+        function validError() {
+            var txtReading = $("#EnterCurrentWMReading").val();
+            if ($('#imgCameraImage').attr('src') == '') {
+                Materialize.toast('Please Capture Image', 4000);
+                $("#lblLogError").html(error);
+            }
+           else  if (!ischecked) {
+                if ($("#EnterCurrentWMReading").val().length == 0) {
+                    Materialize.toast('Please Enter Current WM Reading', 4000);
+                    $("#lblLogError").html(error);
+                }
+                else if (_getPrevReading >= txtReading) {
+                    Materialize.toast('Current reading should be greater', 4000);
+                    $("#lblLogError").html(error);
+                }
+                else {
+                    window.plugins.spinnerDialog.show();
+                    setControlls()
+                }
+            }
+            else {
+                if ($("#txtDoorLock").val().length == 0) {
+                    Materialize.toast('Please Enter Remark', 4000);
+                    $("#lblLogError").html(error);
+                }
+                else {
+                    window.plugins.spinnerDialog.show();
+                    setControlls();
+                }
+            }
+
+        }
+
+        function fillControls(msg) {
+            var obj = JSON.parse(msg.d);
+            var completeName = obj[0].FirstName + ' ' + obj[0].MiddleName + ' ' + obj[0].LastName;
+
+            $("#spnConId").html(obj[0].ConnectionId);
+            $("#spnConsumerName").text(completeName);
+            $("#spnKWCNo").text(obj[0].KWBNumber);
+            $("#spnMeterNo").text(obj[0].MeterNumber);
+            $("#spnZoneNo").text(obj[0].ZoneName);
+            $("#spnPhoneNo").text(obj[0].ContactNumber);
+            $("#spnPhoneNo").parent().attr("href", "tel:" + obj[0].ContactNumber);
+            $("#spnPreviousBillingDate").text(obj[0].ReadingDate);
+            currentConnectionId = obj[0].ConnectionId;
+            var reading = parseFloat(_getPrevReading);
+            $("#spnPreviousReading").text(reading);
+            //var Consumption = parseFloat(obj[0].PreviousDifference);
+            //$("#spnPreviousConsumption").val(Consumption);
+        }
+        function setControlls() {
+           
+            var pReading;
+            if ($("#EnterCurrentWMReading").val() == "") {
+                pReading = '0.00';
+            } else {
+                pReading = $("#EnterCurrentWMReading").val();
+            }
+            Remark = $("#txtDoorLock").val();
+            prc_user_consumer_bill_detail_set(currentConnectionId, pReading, finaldate, imageDataFromCamera, pDoorLock, pMeterStatus, Remark, RoleID);
+        }
+
+        prc_user_consumer_bill_detail_set = function (pConnectionId, pReading, pReadingTime, pReadingImage, pIsDoorLock, pMeterStatus, pRemark, pCreatedBy) {
+            //postData = {
+            //    pUserID: pUserID, pPassword: pPassword
+            //};
+            console.log(currentConnectionId);
+            console.log('pReading' + pReading);
+            console.log('finaldate' + finaldate);
+            // console.log('imageDataFromCamera' +imageDataFromCamera);
+            console.log('pDoorLock' + pDoorLock);
+            console.log('pMeterStatus' + pMeterStatus);
+            console.log('Remark' + Remark);
+            console.log('RoleID' + RoleID);
+          
+            $.ajax({
+
+                async: false,
+                type: "POST",
+                url: webIP + "JIWB_Service.asmx/PostMeterReading",
+                data: JSON.stringify({ pConnectionId: pConnectionId, pReading: pReading, pReadingTime: pReadingTime, pReadingImage: pReadingImage, pIsDoorLock: pIsDoorLock, pMeterStatus: pMeterStatus, pRemark: pRemark, pCreatedBy: pCreatedBy }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (msg) {
+                    var obj = JSON.parse(msg.d);
+                    if (obj.length > 0) {
+                        var obj = JSON.parse(msg.d);
+                        localStorage.setItem('BillId', obj[0].BillId);
+                        localStorage.setItem('ReadingId', obj[0].ReadingId);
+                        location.href = "ConsumerInformationPrint.html";
+                        window.plugins.spinnerDialog.hide();
+                    } else {
+
+                    }
+                },
+                error: function (requestObject, error, errorThrown) {
+                }
+            });
+        }
+
+        $(document).ready(function () {
+
+            $('#btnImageGetFromCamera').click(function () {
+                var options = {
+                    quality: 50,
+                    destinationType: Camera.DestinationType.DATA_URL,
+                    sourceType: Camera.PictureSourceType.CAMERA,
+                    mediaType: Camera.MediaType.CAMERA,
+                    encodingType: Camera.EncodingType.JPEG,
+                    saveToPhotoAlbum: true
+                };
+                navigator.camera.getPicture(onImageSuccess, onImageFail, options);
+            });
+            function onImageSuccess(imageData) {
+                //var image = document.getElementById('myImage');
+                //image.src = "data:image/jpeg;base64," + imageData;
+                //imageFile = imageData;
+                $('#imgCameraImage').show();
+                var image = document.getElementById('imgCameraImage');
+                image.style.display = 'block';
+                image.src = "data:image/jpeg;base64," + imageData;
+                imageDataFromCamera = imageData;
+            }
+
+            function onImageFail(message) {
+                // alert('Failed because: ' + message);
+            }
+            $("#btnCancel").click(function () {
+                location.href = "Dashboard.html";
+            });
+        });
+
+
+    </script>
+
+</head>
+<body>
+    <form action="" id="form1">
+        <nav class="white" role="navigation" style="border-bottom: solid thin #ccc;">
+            <div class="container">
+
+                <a style="color:black; font-size:medium;" class="brand-logo">
+                    Consumer Information
+                </a>
+                <a data-target="modal1" id="btnLogout" style="color:black" class="right">
+                    <i class="fa fa-sign-out" style="margin-top:20px;"></i>
+                </a>
+
+                <ul class="right hide-on-med-and-down" style="display:none;">
+                    <li class="logo"><img alt="" src="#" /> </li>
+                    <li><img alt="" style="height:60px;" class="circle nav-wrapper" src="#" /></li>
+                    <li><a class="waves-effect waves-teal" style="color:black;" href="AlertList.html">Alert List</a></li>
+                    <li><a class="waves-effect waves-teal" style="color:black;" href="ChangeZone.html">Change Zones</a></li>
+                    <li><a class="waves-effect waves-teal" style="color:black;" href="ManualAlert.html">Manual Alert</a></li>
+                    <li><a class="waves-effect waves-teal" style="color:black;" href="MealLog.html">Meal Log</a></li>
+                    <li><a class="waves-effect waves-teal" style="color:black;" href="Break.html">Break</a></li>
+                    <li><a class="waves-effect waves-teal" style="color:black;" href="Performance.html">Performance</a></li>
+                    <li><a class="waves-effect waves-teal" style="color:black;" href="DownLog.html">Down Log?</a></li>
+                </ul>
+
+                <ul id="nav-mobile" class="side-nav white">
+                    <li>
+                        <div class="valign-wrapper col s12">
+
+                            <div style="margin-left:20px;" class="col s6">
+                                <span class="" style="color:black;">
+                                    Hello, <strong class="blue-text" id="lblUserName"></strong>
+                                </span>
+                            </div>
+                            <div class="col s2" style="float:right; margin-left:50px;">
+                                <a id="btnClose" href="#" data-activates="" class="" style="color:black;">x</a>
+                            </div>
+                        </div>
+
+                    </li>
+                    <li style="display:none;"><a class="    -effect waves-orange" href="AlertList.html" style="color:black;"> <i class="large material-icons" style="color:black;">toc</i>Alert List</a></li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="ChangeZone.html" style="color:black;"><i class="large material-icons" style="color:black;">swap_horiz</i>Change Zones</a></li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="ManualAlert.html" style="color:black;"><i class="large material-icons" style="color:black;">library_add</i>Manual Alert</a></li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="MealLog.html" style="color:black;"><i class="large material-icons" style="color:black;">label_outline</i>Meal Log</a></li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="Break.html" style="color:black;"><i class="large material-icons" style="color:black;">pause</i>Break</a></li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="Performance.html" style="color:black;"><i class="large material-icons" style="color:black;">equalizer</i>Performance</a></li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="DownLog.html" style="color:black;"><i class="large material-icons" style="color:black;">trending_down</i>Down Log?</a></li>
+                    <!--<div class="" style="padding-top:auto;">-->
+                    <li><a data-target="modal1" id="lOut" class="waves-effect waves-teal teal-text" href="#"><i class="fa fa-sign-out"></i>Log out</a></li>
+                    <!--</div>-->
+                </ul>
+                <a href="#" data-activates="nav-mobile" class="button-collapse" style="color:black"><i class="fa fa-bars"></i></a>
+            </div>
+        </nav>
+        <div class="row">
+            <div class="col s12 m12">
+                <div class="col s6 m6">
+                    <div class="card z-depth-2  darken-1">
+                        <div class="center" style="font-size:20px;color: #e57373;padding:5px;">
+                            <input type="checkbox" class="example" id="chkDoorLock" name="CHECKBOX_3" />
+                            <label for="chkDoorLock"></label>
+                        </div>
+                        <div class="card-content">
+                            <center> <span class="black-text ">  Door Lock</span><br /></center>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col s6 m6">
+                    <div class="card z-depth-2  darken-1">
+
+                        <div class="center" style="font-size:20px;color: #e57373;padding:5px;">
+                            <input type="checkbox" class="example" id="chkMeterStatus" name="CHECKBOX_4" />
+                            <label for="chkMeterStatus">                             
+                            </label>
+                        </div>
+                        <div class="card-content">
+                            <center> <span class="black-text "> Not Working</span><br /></center>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+                <div class="" style="padding:10px" id="ConsumerInfo">
+                    <table id="table2" class="table striped">
+                        <tbody>
+
+                            <tr>
+                                <td> Connection Id:</td>
+                                <td><span id="spnConId"></span></td>
+
+
+                            </tr>
+                            <tr>
+                                <td>Consumer Name:</td>
+                                <td><span id="spnConsumerName"></span></td>
+
+                            </tr>
+                            <tr>
+                                <td>KWB No:</td>
+                                <td><span id="spnKWCNo"></span></td>
+
+                            </tr>
+                            <tr>
+                                <td>Water Meter No:</td>
+                                <td><span id="spnMeterNo"></span></td>
+
+                            </tr>
+                            <!--<tr>
+                            <td>Meter Status</td>
+                            <td><span id="spnMeterStatus"></span></td>
+
+                        </tr>-->
+                            <tr>
+                                <td>Zone No:</td>
+                                <td><span id="spnZoneNo"></span></td>
+                            </tr>
+                            <tr>
+                                <td>Phone No:</td>
+                                <td>
+                                    <i class="fa fa-phone" style="font-size:18px;color:#0089ec;"></i> <a id="spnPhoneNo"> &nbsp;&nbsp;&nbsp;</a>
+                                </td>
+                            </tr>
+                            <!--<tr>
+                            <td>Previous Billing Date:</td>
+                            <td><span id="spnPreviousBillingDate"></span></td>
+
+                        </tr>
+                        <tr>
+                            <td>Previous Reading:</td>
+                            <td><span id="spnPreviousReading"></span></td>
+
+                        </tr>-->
+                            <!--<tr>
+                            <td>Previous Consumption(KL):</td>
+                            <td><span id="spnPreviousConsumption"></span></td>
+
+                        </tr>-->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row" style="margin-top:20px; height: 80px;">
+                    <div class="col s12 m12">
+                        <div class="col s6">
+                            <center>
+                                <i class="fa fa-camera fa-2x grey-text" style="height: 80px;margin-top:10px;" id="btnImageGetFromCamera"></i>
+                            </center>
+                        </div>
+                        <div class="col s6">
+                            <img src="" id="imgCameraImage" alt="Capture Meter Photo" style="width: 100px; height: 80px;display:none" />
+                        </div>
+                    </div>
+                </div>
+               
+                <div class="row" style="margin-top:20px;">
+                    <div class="col s12" id="divCurrentWMReading">
+                        <input id="EnterCurrentWMReading" type="number" style="border-bottom:solid thin #ccc;" placeholder="Enter valid reading" />
+                    </div>
+                    <div class="col s12S" id="divDoorLock" style="display:none">
+                        <label for="txtDoorLock">Remark</label>
+                        <textarea id="txtDoorLock" class="materialize-textarea"></textarea>
+
+                    </div>
+                    <div class=" col s12" style="display:none">
+                        <div class="input-field">
+                            <input id="txtReadingDate" type="text" class="validate" style="border-bottom:solid thin #ccc;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s6">
+                        <button id="btnCancel" style="margin-bottom:15px;" class="btn waves-effect waves-light col s12 blue darken-1 waves-orange" type="button" name="action"> Cancel</button>
+                    </div>
+                    <div class="input-field col s6">
+                        <button id="btnSubmit" style="margin-bottom:15px;" class="btn waves-effect waves-light col s12 blue darken-1 waves-orange" type="button" name="action"> Submit</button>
+                    </div>
+                    <!--<div class="input-field col s6">
+                    <button id="btnPrint" style="margin-bottom:15px;" class="btn waves-effect waves-light col s12 blue darken-1 waves-orange" type="button" name="action">Print</button>
+                </div>-->
+                </div>
+
+                <!-- Modal Structure -->
+                <div id="modal1" class="modal">
+                    <div class="modal-content">
+                        <span><i class="fa fa-exclamation-triangle yellow-text left" style="font-size:medium;"></i></span>
+                        <span class="teal-text">Are you sure to logout?</span>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#!" class=" modal-action teal white-text modal-close waves-effect waves-green btn-flat">No</a>
+                        <a href="#!" id="btnOut" class=" modal-action red white-text modal-close  waves-effect waves-green btn-flat left">Yes</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</body>
+</html>

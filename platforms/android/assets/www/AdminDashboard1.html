@@ -1,0 +1,362 @@
+﻿    
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" />
+    <title></title>
+    <!-- CSS  -->
+    <script type="text/javascript" src="assets/js/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="assets/js/materialize.js"></script>
+    <script type="text/javascript" src="assets/js/init.js"></script>
+    <link href="assets/css/custom.css" rel="stylesheet" type="text/css" />
+    <link href="assets/css/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection" />
+    <link href="assets/css/ghpages-materialize.css" type="text/css" rel="stylesheet" media="screen,projection" />
+    <link href="assets/css/style.css" type="text/css" rel="stylesheet" media="screen,projection" />
+    <link rel="stylesheet" type="text/css" href="assets/css/font-awesome.min.css" media="all" />
+    <script src="assets/js/jquery.dropdown.js"></script>
+
+    <style type="text/css">
+        .toast {
+            background-color: #F44336 !important;
+            font-size: small;
+        }
+
+        .carousel {
+            max-height: 50px;
+        }
+
+        .carousel-item {
+            max-width: 60px;
+        }
+
+        .fontTital {
+            font-size: 20px;
+            color: yellow;
+        }
+
+        .card .card-content {
+            padding: 4px !important;
+        }
+
+        table tr td {
+            padding: 0px;
+        }
+
+        [type="checkbox"] + label:before, [type="checkbox"]:not(.filled-in) + label:after {
+            border: 2px solid #0089ec;
+        }
+
+        [type="checkbox"]:checked + label:before {
+            border-right: 2px solid #0089ec;
+            border-bottom: 2px solid #0089ec;
+        }
+
+        .tabs.tabs-transparent .indicator {
+            background-color: #0089ec;
+        }
+        body {
+            background-color: #fff;
+        }
+    </style>
+    <script type="text/javascript">
+        var pUserId = '';
+        var pUserRole = '';
+        var pIsActive = true;
+        var UserName = localStorage.getItem("UserName");
+        // var webIP = 'http://192.168.1.22/jiwb/';  //Junaid Server
+        //var webIP = 'http://192.168.0.108/jiwb/'; //Hotel
+       // var webIP = 'http://192.168.1.25/jiwb/';    //Self
+        $(function () {
+            $("#lblUserName").text(UserName);
+            $('#ddlUserName').dropdown({ pAction: 4, pLookUpId: 0, pLookUpType: 1, pSelectionType: 0 });
+            
+
+            $("#ddlUserName").change(function () {
+                pUserId = $(this).children("option:selected").val();
+            });
+
+            $('#btnLogin').hide();
+            $('.carousel.carousel-slider').carousel({ full_width: true });
+            $("#btnLogout").click(function () {
+                $('#modal1').modal({});
+            });
+            $("#btnOut").click(function () {
+                location.href = "index.html";
+            });
+            $("#btnClose").click(function () {
+                $('#sidenav-overlay').trigger('click');
+            });
+            $("#lOut").click(function () {
+                $('#modal1').modal({});
+            });
+            prc_device_get_user_roles(0, 0);
+            $("#ddlUserName").change(function () {
+                if ($(this).val() > "0") {
+                    $("#divCheck").fadeIn(200);
+                    
+                    $('#btnLogin').show('slow');
+                } else {
+                    $("#divCheck").hide();
+                }
+            });
+
+            $('#btnLogin').click(function () {
+                var count = 0;
+                var error = "";
+                var errorcount = 0;
+                $("input[type='checkbox']:checked").each(function () {
+                    count = 1;
+                });
+                if (count == 0) {
+                    Materialize.toast('Please Select Roll', 4000);
+                    $("#lblLogError").html(error);
+                }
+            });
+
+
+            $('#test5').click(function (e) {
+                var table = $(e.target).closest('table');
+                $('td input:checkbox', table).prop('checked', this.checked);
+            });
+            $('input.example').on('change', function () {
+                $('input.example').not(this).prop('checked', false);
+                pUserRole = ($(this).attr('id'));
+            });
+        });
+
+        prc_device_get_user_roles = function (pAction, pLookUpId) {
+            postData = { pAction: pAction, pLookUpId: pLookUpId };
+            $.ajax({
+                async: false,
+                type: "POST",
+                url: webIP + "JIWB_Service.asmx/prc_device_get_user_roles",
+                data: JSON.stringify({ "dbParameters": postData }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (msg) {
+                    if (msg != null) {
+                        if (msg.d != null) {
+                            if (msg.d != '') {
+                                var obj = JSON.parse(msg.d);
+
+                                var count = 0;
+                                var row = '';
+                                if (obj.length > 0) {
+
+                                    $.each(obj, function (i, d) {
+                                        row += '<tr>';
+                                        row += '<td>';
+                                        //row += '<input type="checkbox" id="chk-' + d.RoleID + '" value="' + d.Role + '" class="example" />';
+                                        //row += '<label for="chk-' + d.RoleID + '" style="color:#000"></label>';
+                                        row += '<td><input type="checkbox" class="example" id="' + d.RoleID + '" value="' + d.RoleID + '"/><label for="' + d.RoleID + '"> &nbsp; ' + d.Role + '</label></td>';
+                                        row += '</td>';
+                                        row += '</tr>';
+                                        count++;
+
+                                    });
+                                    $("#tblRoles").append(row);
+                                }
+                            }
+                            else {
+
+                            }
+                        }
+                    }
+                },
+                error: function (requestObject, error, errorThrown) {
+
+                }
+            });
+        }
+        prc_user_creation_role_set = function (pUserId, pUserRole, pIsActive) {
+
+            postData = {
+                pUserId: pUserId, pUserRole: pUserRole, pIsActive: pIsActive
+            };
+            $.ajax({
+                async: false,
+                type: "POST",
+                url: webIP + "JIWB_Service.asmx/prc_user_creation_role_set",
+                data: JSON.stringify({ "dbParameters": postData }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (msg) {
+                    var obj = JSON.parse(msg.d);
+                    location.href = "AdminDashboard.html";
+                   // $('#tbdashboard').addClass('active');
+
+                },
+                error: function (requestObject, error, errorThrown) {
+                }
+            });
+        }
+        function roleSetbyAdmin() {
+            prc_user_creation_role_set(pUserId, pUserRole, pIsActive);
+
+        }
+
+    </script>
+
+
+
+</head>
+<body>
+    <form action="" id="form1">
+        <nav class="white" role="navigation" style="border-bottom: solid thin #ccc;">
+            <div class="container">
+
+                <a style="color:black; font-size:medium;" class="brand-logo">
+                    Admin Dashboard
+                </a>
+                <a data-target="modal1" id="btnLogout" style="color:black" class="right">
+                    <i class="fa fa-sign-out" style="margin-top:22px;margin-bottom:-22px;"></i>
+                </a>
+
+                <ul class="right hide-on-med-and-down" style="display:none;">
+                    <li class="logo"><img alt="" src="" width="40px" height="40px" /> </li>
+                    <li><img alt="" style="height:60px;" class="circle nav-wrapper" src="assets/images/profile-img.jpg" /></a></li>
+                    <li><a class="waves-effect waves-teal" style="color:black;" href="AlertList.html">Alert List</a></li>
+                    <li><a class="waves-effect waves-teal" style="color:black;" href="ChangeZone.html">Change Zones</a></li>
+                    <li><a class="waves-effect waves-teal" style="color:black;" href="ManualAlert.html">Manual Alert</a></li>
+                    <li><a class="waves-effect waves-teal" style="color:black;" href="MealLog.html">Meal Log</a></li>
+                    <li><a class="waves-effect waves-teal" style="color:black;" href="Break.html">Break</a></li>
+                    <li><a class="waves-effect waves-teal" style="color:black;" href="Performance.html">Performance</a></li>
+                    <li><a class="waves-effect waves-teal" style="color:black;" href="DownLog.html">Down Log?</a></li>
+                </ul>
+
+                <ul id="nav-mobile" class="side-nav white">
+                    <li>
+                        <div class="valign-wrapper col s12">
+                            
+                            <div style="margin-left:20px;" class="col s6">
+                                <span class="" style="color:black;">
+                                    Hello, <strong class="blue-text" id="lblUserName"></strong>
+                                </span>
+                            </div>
+                            <div class="col s2" style="float:right; margin-left:50px;">
+                                <a id="btnClose" href="#" data-activates="" class="" style="color:black;">x</a>
+                            </div>
+                        </div>
+
+                    </li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="AlertList.html" style="color:black;"> <i class="large material-icons" style="color:black;">toc</i>Alert List</a></li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="ChangeZone.html" style="color:black;"><i class="large material-icons" style="color:black;">swap_horiz</i>Change Zones</a></li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="ManualAlert.html" style="color:black;"><i class="large material-icons" style="color:black;">library_add</i>Manual Alert</a></li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="MealLog.html" style="color:black;"><i class="large material-icons" style="color:black;">label_outline</i>Meal Log</a></li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="Break.html" style="color:black;"><i class="large material-icons" style="color:black;">pause</i>Break</a></li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="Performance.html" style="color:black;"><i class="large material-icons" style="color:black;">equalizer</i>Performance</a></li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="DownLog.html" style="color:black;"><i class="large material-icons" style="color:black;">trending_down</i>Down Log?</a></li>
+                    <div class="" style="padding-top:auto;">
+                        <li><a data-target="modal1" id="lOut" class="waves-effect waves-teal teal-text" href="#"><i class="fa fa-sign-out"></i>Log out</a></li>
+                    </div>
+                </ul>
+
+                <a href="#" data-activates="nav-mobile" class="button-collapse" style="color:black"><i class="fa fa-bars"></i></a>
+
+            </div>
+
+        </nav>
+        <nav class="nav-extended white">
+            <div class="nav-wrapper ">
+
+                <ul class="tabs tabs-transparent" style="color:black;border-bottom:solid thin #ccc;">
+                    <li class="tab " id="tbdashboard"><a href="#test2" class="active" style="color:black;" class="">Dashbord</a></li>
+                    <li class="tab "><a href="#test1" style="color:black;" href="#test1">All User</a></li>
+                    <div class="indicator" style="right: 157px; left: 0px;"></div>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="col s12" id="test1">
+            <div class="row" style=" background-color:white;">
+                <div class="col s12">
+                    <select class="browser-default" id="ddlUserName" style="color:black;border-bottom:solid thin #0089ec ;">
+                        
+                    </select>
+                </div>
+                <br /><br /><br />
+                <div class="col s1"></div>
+                <div class="col s10 bordered card z-depth-1" id="divCheck" style="display: none;padding:10px;">
+                    <table class="bordered">
+                        <tbody id="tblRoles"></tbody>
+                    </table>
+
+                </div>
+
+                <div class="col s1"></div>
+                <div class="input-field col s12" style="margin-top:50px;">
+                    <button id="btnLogin" onclick="roleSetbyAdmin();" style="margin-bottom:15px;" class="btn waves-effect waves-light col s12 blue darken-1 waves-orange" type="button" name="action">Submit</button>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row" id="test2" style="margin-top:20px;">
+            <div class="col s6 m6">
+                <div class="card z-depth-2 blue darken-1">
+
+                    <div class="center" style="font-size:20px;color: #eceff1;padding:10px;">
+                        5234
+                    </div>
+                    <div class="card-content">
+                        <center>  <span class="white-text fontTital">TOTAL CONSUMERS </span><br /></center>
+                    </div>
+                </div>
+            </div>
+            <div class="col s6 m6">
+                <div class="card z-depth-2 blue darken-1">
+
+                    <div class="center" style="font-size:20px;color: #eceff1;padding:10px;">
+                        1165
+                    </div>
+                    <div class="card-content">
+                        <center> <span class="white-text fontTital">TOTAL BILLED CONSUMERS</span><br /></center>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col s6 m6">
+                <div class="card z-depth-2 blue darken-1">
+
+                    <div class="center" style="font-size:20px;color:#eceff1;padding:10px;">
+                        Rs 1173.00
+                    </div>
+                    <div class="card-content">
+                        <center> <span class="white-text fontTital">TOTAL DEMAND</span><br /></center>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col s6 m6">
+                <div class="card z-depth-2 blue darken-1">
+
+                    <div class="center" style="font-size:20px;color:#eceff1;padding:10px;">
+                        Rs 1260.00
+                    </div>
+                    <div class="card-content">
+                        <center>
+                            <span class="white-text fontTital">TOTAL COLLECTION</span><br />
+                        </center>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!-- Modal Structure -->
+        <div id="modal1" class="modal">
+            <div class="modal-content">
+                <span><i class="fa fa-exclamation-triangle yellow-text left" style="font-size:medium;"></i></span>
+                <span class="teal-text">Are you sure to logout?</span>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class=" modal-action teal white-text modal-close waves-effect waves-green btn-flat">No</a>
+                <a href="#!" id="btnOut" class=" modal-action red white-text modal-close  waves-effect waves-green btn-flat left">Yes</a>
+            </div>
+        </div>
+
+    </form>
+
+</body>
+</html>

@@ -1,0 +1,264 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" />
+    <title></title>
+    <script type="text/javascript" src="assets/js/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="assets/js/materialize.js"></script>
+    <script type="text/javascript" src="assets/js/jquery.validate.js"></script>
+    <script type="text/javascript" src="assets/js/init.js"></script>
+    <link href="assets/css/custom.css" rel="stylesheet" type="text/css" />
+    <link href="assets/css/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection" />
+    <link href="assets/css/ghpages-materialize.css" type="text/css" rel="stylesheet" media="screen,projection" />
+    <link href="assets/css/style.css" type="text/css" rel="stylesheet" media="screen,projection" />
+    <link rel="stylesheet" type="text/css" href="assets/css/font-awesome.min.css" media="all" />
+    <script type="text/javascript" src="cordova.js"></script>
+    
+    <style type="text/css">
+        input.filter-input {
+            margin-bottom: 0px;
+        }
+        table tr td {
+            padding: 0px;
+        }
+
+        .row {
+            margin-bottom: 0px;
+        }
+
+        #toast-container {
+            background-color: #F44336 !important;
+        }
+
+        .toast {
+            background-color: #F44336 !important;
+            font-size: small;
+        }
+
+        input:not([type]):focus:not([readonly]), input[type=text]:focus:not([readonly]), input[type=password]:focus:not([readonly]), input[type=email]:focus:not([readonly]), input[type=url]:focus:not([readonly]), input[type=time]:focus:not([readonly]), input[type=date]:focus:not([readonly]), input[type=datetime]:focus:not([readonly]), input[type=datetime-local]:focus:not([readonly]), input[type=tel]:focus:not([readonly]), input[type=number]:focus:not([readonly]), input[type=search]:focus:not([readonly]), textarea.materialize-textarea:focus:not([readonly]) {
+            border-bottom: none;
+            box-shadow: none;
+        }
+
+        input:not([type]), input[type=text], input[type=password], input[type=email], input[type=url], input[type=time], input[type=date], input[type=datetime], input[type=datetime-local], input[type=tel], input[type=number], input[type=search], textarea.materialize-textarea {
+            border-bottom: none;
+        }
+
+            input:not([type]).valid, input:not([type]):focus.valid, input[type=text].valid, input[type=text]:focus.valid, input[type=password].valid, input[type=password]:focus.valid, input[type=email].valid, input[type=email]:focus.valid, input[type=url].valid, input[type=url]:focus.valid, input[type=time].valid, input[type=time]:focus.valid, input[type=date].valid, input[type=date]:focus.valid, input[type=datetime].valid, input[type=datetime]:focus.valid, input[type=datetime-local].valid, input[type=datetime-local]:focus.valid, input[type=tel].valid, input[type=tel]:focus.valid, input[type=number].valid, input[type=number]:focus.valid, input[type=search].valid, input[type=search]:focus.valid, textarea.materialize-textarea.valid, textarea.materialize-textarea:focus.valid {
+                border-bottom: none;
+                box-shadow: none;
+            }
+
+        body {
+            background-color: #fff;
+        }
+    </style>
+    <script type="text/javascript">
+        // var webIP = 'http://192.168.1.22/jiwb/'; //Junaid Server
+        // var webIP = 'http://192.168.0.108/jiwb/'; //Hotel
+        //var webIP = 'http://192.168.1.25/jiwb/';    //Self
+        var UserNameRemember = localStorage.getItem("UserNameRemember");
+        var PasswordRemeber = localStorage.getItem("PasswordRemeber");
+        var deviceIMEI_NO;
+        var error = "";
+        var errorcount = 0;
+        var allowsubmit = false;
+        $(function () {
+
+            $("#lnkForgotPassword").click(function () {
+                location.href = "ForgotPassword.html";
+            });
+            $("#lnkRestration").click(function () {
+                localStorage.setItem("deviceIMEI_NO", deviceIMEI_NO);
+                location.href = "UserRegistration.html";
+            });
+            $("#txtUserID").val(UserNameRemember);
+            $("#txtPassword").val(PasswordRemeber);
+
+
+        });
+        document.addEventListener("deviceready", onDeviceReady, false);
+        function onDeviceReady() {
+            cordova.plugins.IMEI(function (err, imei) {
+                deviceIMEI_NO = imei;
+
+            });
+        }
+
+        function validError() {
+
+            if (errorcount == 0) {
+                if ($("#txtUserID").val().length == 0) {
+                    Materialize.toast('User ID required', 4000);
+                    $("#lblLogError").html(error);
+                    //errorcount = 1;
+                }
+                else if ($("#txtPassword").val().length == 0) {
+                    Materialize.toast('Password is required', 4000);
+                    $("#lblLogError").html(error);
+                    // errorcount = 1;
+                }
+                else {
+                    setControlls();
+
+                }
+            }
+        }
+        prc_device_user_login = function (pUserID, pPassword) {
+            window.plugins.spinnerDialog.show();
+            $.ajax({
+
+                async: false,
+                type: "POST",
+                url: webIP + "JIWB_Service.asmx/prc_device_user_login",
+                data: JSON.stringify({ pUserID: pUserID, pPassword: pPassword }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (msg) {
+                    var obj = JSON.parse(msg.d);
+                    if (obj.length > 0) {
+
+                        localStorage.setItem("UserName", obj[0].FirstName + '  ' + obj[0].LastName);
+                        localStorage.setItem("RoleID", obj[0].RoleId);
+                        localStorage.setItem('userId', obj[0].UserId);
+                        localStorage.setItem("Token", obj[0].Token);
+                        localStorage.setItem("UserNameRemember", $("#txtUserID").val());
+                        localStorage.setItem("PasswordRemeber", $("#txtPassword").val());
+
+                        if (obj[0].IsActive == '1') {
+
+                            if (obj[0].RoleId == '2') {
+                                location.href = 'AdminDashboard.html';
+                                window.plugins.spinnerDialog.hide();
+
+                            }
+                            else {
+                                location.href = 'Dashboard.html';
+                                window.plugins.spinnerDialog.hide();
+
+                            }
+                        }
+                        else {
+                            Materialize.toast('Permission Denied by Admin ', 4000);
+                            $("#lblLogError").html(error);
+                        }
+                    } else {
+                        $('.error').text('Invalid Username or Password');
+                        allowsubmit = false;
+                    }
+                },
+                error: function (requestObject, error, errorThrown) {
+                }
+            });
+
+        }
+        function setControlls() {
+            pUserID = $("#txtUserID").val();
+            pPassword = $("#txtPassword").val();
+            prc_device_user_login(pUserID, pPassword);
+        }
+    </script>
+</head>
+<body>
+
+
+    <form action="" id="frmValidate" class="login-form">
+        <div id="login-page" class="row">
+            <div class="col s12 z-depth-6">
+
+                <div class="row" style="margin-top:28px;">
+                    <div class="input-field col s12 center">
+                        <h5 class="center login-form-text" style="color:#000;display:none; ">JAIN IRRIGATION</h5>
+                        <img src="assets/images/jains.png" alt="" style="height:100px;" class="responsive-img valign profile-image-login" />
+
+                    </div>
+                </div>
+
+                <div class=" white">
+                    <!--<div class="row">
+                        <div class="input-field col s1 ">
+                            <i class="fa fa-user" style="color:black;padding-top:10px;"></i>
+                        </div>
+                        <div class="input-field col s11 ">
+                            <input class="validate" name="uname" style="color:black;font-size:15px;" id="txtUserID" type="text" />
+                            <label for="txtUserId" data-error="" data-success="" style="color:#000;">User ID</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s1 ">
+                            <i class="fa fa-lock" style="color:black;padding-top:10px;"></i>
+                        </div>
+                        <div class="input-field col s11">
+                            <input class="validate" style="color:black;font-size:15px;font-weight:bold;" name="password" id="txtPassword" type="password"/>
+                            <label for="txtPassword" style="color:black;">Password</label>
+                        </div>
+                        <div class="col s12">
+                            <span class="error" style="color:red;font-size:15px;"></span><br />
+                        </div>
+                    </div>-->
+                    <div class="" id="divLogin" style=" margin-top: 12vh;">
+                        <div class="" style="height: 80px; background-color: transparent;">
+                            <div class="col s2 blue darken-1" style="height: 80px; padding-left: 0;
+                       text-align: center;">
+                                <i id="I5" class="fa fa-user  white-text" style="font-size: large; padding-top: 15px;">
+                                </i>
+                                <br />
+                                <i id="I7" class="fa fa-lock  white-text" style="font-size: large; padding-top: 15px;">
+                                </i>
+                            </div>
+                            <div class="col s10" style="border-style: solid; padding: 0; border-width: thin;
+                        border-color: #47b7e9;  background-color: transparent;
+                        height: 80px;">
+                                <div style="height: 40px; border-bottom-style: solid; border-bottom-width: thin;
+                            border-bottom-color: #47b7e9;">
+                                    <input id="txtUserID" placeholder="User ID" type="text" style="color: black; padding-left: 10px;width:90%;
+                                height: 40px;" class="validate" />
+                                </div>
+                                <input id="txtPassword" placeholder="Password" type="password" style="color: black;width:90%;
+                            padding-left: 10px; height: 40px;" class="validate" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="right" style="margin-top:10px;">
+                        <!--<label for="lblforgot" style="color:black;">Forgot Password..</label>-->
+                        <a id="lnkForgotPassword">Forgot Password </a>
+                    </div>
+                    <!--<div class="left" style="margin-top:10px;">
+                        <input type="checkbox" id="chkRemeberMe" />
+                        <label for="chkRemeberMe" style="color: #039be5;">Remember me</label>
+                    </div>-->
+                    <div class="row">
+                        <div class="input-field col s12 center">
+
+                            <em style="font-size:10px;color:black;">* This system is restricted for authorized users only.</em>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <button id="btnLogin" onclick="validError();" style="margin-bottom:0px;" class="btn waves-effect waves-light col s12 blue darken-1 waves-orange" type="button" name="action">Login</button>
+                            <br /><br />
+                            <div class="center">
+                                <br />
+                                <a id="lnkRestration" class="" style="margin-top:50em;">User Registration </a>
+                            </div>
+                        </div>
+
+                        <div class="disclaimer">
+                            <div class="input-field col s12 center">
+                                <img src="assets/images/logoJAIn.PNG" alt="JAIN" class="" width="30px" height="30px" />
+                                <em style="color:#000;">Build-V1.2812018 </em>
+
+                                <p class="center login-form-text" style="color:#000;">*Jain Irrigation Systems Ltd.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </form>
+</body>
+</html>

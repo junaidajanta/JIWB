@@ -1,0 +1,1071 @@
+﻿
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" />
+    <title>User Dashboard</title>
+    <!-- CSS  -->
+    <script type="text/javascript" src="assets/js/JsBarcode.all.js"></script>
+    <script type="text/javascript" src="assets/js/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="assets/js/materialize.js"></script>
+    <script type="text/javascript" src="assets/js/init.js"></script>
+    <!--<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>-->
+    <link href="assets/css/custom.css" rel="stylesheet" type="text/css" />
+    <link href="assets/css/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection" />
+    <link href="assets/css/ghpages-materialize.css" type="text/css" rel="stylesheet" media="screen,projection" />
+    <link href="assets/css/style.css" type="text/css" rel="stylesheet" media="screen,projection" />
+    <link rel="stylesheet" type="text/css" href="assets/css/font-awesome.min.css" media="all" />
+    <script type="text/javascript" src="cordova.js"></script>
+    <script src="assets/js/jquery.dropdown.js"></script>
+
+    <!--<link rel="stylesheet" type="text/css" href=" https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css" media="all" />-->
+
+    <style type="text/css">
+        .fontTital {
+            font-size: 20px;
+            color: yellow;
+        }
+
+        .card .card-content {
+            padding: 4px !important;
+        }
+
+        #toast-container {
+            background-color: #F44336 !important;
+        }
+
+        .toast {
+            background-color: #F44336 !important;
+            font-size: small;
+        }
+
+        .fontTital {
+            font-size: 20px;
+            color: yellow;
+        }
+
+        .card .card-content {
+            padding: 4px !important;
+        }
+
+        .carousel {
+            max-height: 50px;
+        }
+
+        .carousel-item {
+            max-width: 60px;
+        }
+
+        .row {
+            margin-bottom: 0px;
+        }
+
+
+        input:not([type]), input[type=text], input[type=password], input[type=email], input[type=url], input[type=time], input[type=date], input[type=datetime], input[type=datetime-local], input[type=tel], input[type=number], input[type=search], textarea.materialize-textarea {
+            margin: 0 0 0 0 !important;
+            border-bottom: 1px solid #e57373;
+        }
+
+            input:not([type]).valid, input:not([type]):focus.valid, input[type=text].valid, input[type=text]:focus.valid, input[type=password].valid, input[type=password]:focus.valid, input[type=email].valid, input[type=email]:focus.valid, input[type=url].valid, input[type=url]:focus.valid, input[type=time].valid, input[type=time]:focus.valid, input[type=date].valid, input[type=date]:focus.valid, input[type=datetime].valid, input[type=datetime]:focus.valid, input[type=datetime-local].valid, input[type=datetime-local]:focus.valid, input[type=tel].valid, input[type=tel]:focus.valid, input[type=number].valid, input[type=number]:focus.valid, input[type=search].valid, input[type=search]:focus.valid, textarea.materialize-textarea.valid, textarea.materialize-textarea:focus.valid {
+                border-bottom: 1px solid #e57373;
+                box-shadow: 0 1px 0 0 #e57373;
+            }
+
+        [type="checkbox"] + label:before, [type="checkbox"]:not(.filled-in) + label:after {
+            border: 2px solid #e57373;
+        }
+
+        [type="checkbox"]:checked + label:before {
+            border-right: 2px solid #e57373;
+            border-bottom: 2px solid #e57373;
+        }
+
+        [type="checkbox"] + label {
+            padding-left: 20px;
+            line-height: 25px;
+            font-size: 0.9rem;
+        }
+
+        body {
+            background-color: #fff;
+        }
+
+        #table2 tr, td, th {
+            padding-top: 1px;
+            padding-bottom: 1px;
+        }
+        .fontTital {
+            font-size: 20px;
+            color: yellow;
+        }
+
+        .card .card-content {
+            padding: 4px !important;
+        }
+
+        td, th {
+            padding: 3px 3px;
+        }
+
+        .card {
+            border-radius: 10px;
+        }
+
+        .fa {
+            color: #e57373;
+        }
+    </style>
+    <script type="text/javascript">
+        // var webIP = 'http://192.168.1.22/jiwb/';  //Junaid Server
+        //var webIP = 'http://192.168.0.108/jiwb/'; //Hotel
+        //var webIP = 'http://192.168.1.25/jiwb/';    //Self
+        var UserName = localStorage.getItem("UserName");
+        var BillId = localStorage.getItem('BillId');
+        var ReadingId = localStorage.getItem('ReadingId');
+        var imageDataFromCamera;
+        var deviceMacId = localStorage.getItem('deviceAddress');
+        var prvConsumerTypeId;
+        var _CurrentConsumption;
+        var ConsumerTypeId1, ConsumerTypeId3, ConsumerTypeId4;
+        var price1, price2, price3, price4;
+        var rate1 = 0, rate2 = 0, rate3 = 0, rate4 = 0;
+        var usage1 = 0, usage2 = 0, usage3 = 0, usage4 = 0;
+        var Total = 0;
+        var _meterNumber;
+        var _meterNumberBarcode;
+        var searchByParameter;
+        var count = 0;
+        var error = "";
+        var errorcount = 0;
+        var _meterNumber;
+        var _meterNumberBarcode;
+        var completeName;
+        var wms;
+        $(function () {
+            document.addEventListener("deviceready", onDeviceReady, false);
+           
+          
+            $("#lblUserName").text(UserName);
+            $('.carousel.carousel-slider').carousel({ full_width: true });
+            $("#btnLogout").click(function () {
+                $('#modal1').modal({});
+            });
+            $("#btnOut").click(function () {
+                location.href = "index.html";
+            });
+            $("#btnClose").click(function () {
+                $('#sidenav-overlay').trigger('click');
+            });
+            $("#lOut").click(function () {
+                $('#modal1').modal({});
+            });
+            $('input.example').on('change', function () {
+                $('input.example').not(this).prop('checked', false);
+
+            });
+            $("#btnSubmit").click(function () {
+                // validError();
+                setControlls();
+            });
+            $("#btnCancel").click(function () {
+                location.href = "Dashboard.html";
+            });
+
+            $("#chkSearchbyMeterNo").change(function () {
+                searchByParameter = 4;
+            });
+            $("#chkSearchbyName").change(function () {
+                searchByParameter = 1;
+            });
+            $("#chkSearchbyKWCNo").change(function () {
+                searchByParameter = 2;
+            });
+            $("#chkSearchbyMobileNo").change(function () {
+                searchByParameter = 3;
+                //  document.getElementById("cameraTakePicture").addEventListener("click", cameraTakePicture);
+            });
+            
+            document.getElementById("myCanvas").style.display = 'none';
+            function onDeviceReady() {
+                console.log(deviceMacId);
+
+            }
+
+            $("#SearchKeyWord").autocomplete({
+                source: function (request, responce) {
+                    $.ajax({
+                        async: false,
+                        type: "POST",
+                        url: webIP + "JIWB_Service.asmx/GetConsumerNames",
+                        data: JSON.stringify({ term: request.term }),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (data) {
+                            responce(data.d);
+                        },
+                        error: function (err) {
+                            //  alert(err);
+                        }
+                    });
+                }
+            });
+
+        });
+        function billDetails() {
+            cordova.plugins.barcodeScanner.scan(
+                function (result) {
+                    alert("We got a barcode\n" + "Result: " + result.text + "\n" + "Format: " + result.format + "\n" + "Cancelled: " + result.cancelled);
+                },
+                function (error) { alert("Scanning failed: " + error); });
+        }
+
+        function validError() {
+
+            if (errorcount == 0) {
+                if ($("#SearchKeyWord").val().length == 0) {
+                    Materialize.toast('Search KeyWord Required', 4000);
+                    $("#lblLogError").html(error);
+                }
+            }
+            $("input[type='checkbox']:checked").each(function () {
+                count = 1;
+            });
+            if (count == 0) {
+                Materialize.toast('Please Select One Option', 4000);
+                $("#lblLogError").html(error);
+            }
+            else {
+                setControlls();
+            }
+        }
+
+
+        function setControlls() {
+            pSearchKeyword = $("#SearchKeyWord").val();
+            pFromDate = $("#txtFromReadingDate").val();
+            pToDate = $("#txtToReadingDate").val();
+            prc_bill_search_from_date_to_date(pSearchKeyword, searchByParameter, pFromDate, pToDate);
+        }
+
+
+        prc_bill_search_from_date_to_date = function (pSearchKeyword, searchByParameter, pFromDate, pToDate) {
+
+            $.ajax({
+                async: false,
+                type: "POST",
+                url: webIP + "JIWB_Service.asmx/consumerDateWiseSearch",
+                data: JSON.stringify({ pSearchKeyword: pSearchKeyword, searchByParameter: searchByParameter, pFromDate: pFromDate, pToDate: pToDate }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (msg) {
+                    var obj = JSON.parse(msg.d);
+                    //_GetLastReading = obj[0].ConnectionId;
+                    console.log(msg.d);
+                    if (obj.length > 0) {
+                        fillAllControls(msg);
+                        GetSlabByConsumerTypeId(obj[0].ConsumerTypeId);
+                        _CurrentConsumption = obj[0].CurrentConsumption;
+                        _meterNumber = obj[0].MeterNumber;
+                        JsBarcode("#barcode3", _meterNumber, {
+                            format: "CODE128",
+                            displayValue: false,
+                            fontSize: 20
+                        });
+                        $("#btnPrint").click(function () {
+                            window.plugins.spinnerDialog.show();
+                            myfunction(msg);
+
+                        });
+
+                    }
+                    else {
+                        Materialize.toast('Invalid Search Keyword', 4000);
+                        $("#lblLogError").html(error);
+                    }
+                },
+                error: function (requestObject, error, errorThrown) {
+                }
+            });
+        }
+
+        function fillAllControls(msg) {
+            var obj = JSON.parse(msg.d);
+            var completeName = obj[0].FirstName + ' ' + obj[0].MiddleName + ' ' + obj[0].LastName;
+            $("#spnConnectionId").text(obj[0].ConnectionId);
+            $("#spnBillId").text(obj[0].BillId);
+            $("#spnBillDate").text(obj[0].ReadingDate);
+            $("#spnReadingDate").text(obj[0].ReadingDate);
+            $("#spnConsumerName").text(completeName);
+            $("#spnMeterNo").text(obj[0].MeterNumber);
+            if (obj[0].IsMeterFaulty == false && obj[0].IsDoorLock == false) {
+                wms = 'Working';
+            }
+            else if (obj[0].IsDoorLock == true) {
+                wms = 'Door Locked';
+            }
+            else if (obj[0].IsMeterFaulty == true) {
+                wms = 'Not Working';
+            }
+            else {
+            }
+            $("#spnWaterMeterStatus").text(wms);
+            $("#spnTerrifPresent").text(obj[0].ConsumerType);
+            $("#spnZoneName").text(obj[0].ZoneName);
+            $("#spnSubZoneName").text(obj[0].SubZoneName);
+            $("#spnAddress").text(obj[0].AddressLine1);
+            $("#spnAddress2").text(obj[0].AddressLine2);
+            $("#spnPinCode").text(obj[0].PinCode);
+            $("#spnPhoneNo").text(obj[0].ContactNumber);
+            $("#spnPhoneNo").parent().attr("href", "tel:" + obj[0].ContactNumber);
+            $("#spnKWCNo").text(obj[0].KWBNumber);
+            $("#spnPreviousBillingDate").text(obj[0].ReadingDate);
+            $("#spnPreviousReading").text(obj[0].PreviousDifference);
+            $("#spnPreviousConsumption").text(obj[0].PreviousDifference);
+            $("#spnCurrentReading").text(obj[0].Reading);
+            $("#spnFixedCharges").text(obj[0].FixedCharges);
+            $("#spnTotalConsumption").text(obj[0].CurrentConsumption);
+            $("#spnCurrentBillPayAmount").text(obj[0].BillAmount);
+            $("#spnIssueDate").text(obj[0].IssueDate);
+            $("#spnDueBillDate").text(obj[0].DueDate);
+            $("#spnDueBillPayAmount").text(obj[0].DueAmount);
+            $("#spnGrandTotalPayAmount").text(obj[0].BillAmount);//Calculate with arriers and due
+            $("#spnBillPeriod").text(obj[0].ReadingDate);
+            $("#spnMeterReader").text(UserName);
+
+        }
+        GetSlabByConsumerTypeId = function (ConsumerTypeId) {
+          
+            $.ajax({
+                async: false,
+                type: "POST",
+                url: webIP + "JIWB_Service.asmx/_GetSlabByConsumerTypeId",
+                data: JSON.stringify({ ConsumerTypeId: ConsumerTypeId }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (msg) {
+                    var obj = JSON.parse(msg.d);
+                    console.log(msg.d);
+                    if (obj.length > 0) {
+                        //ConsumerTypeId = obj[0].ConsumerTypeId;
+                        _CurrentConsumption = obj[0].CurrentConsumption
+                        ConsumerTypeId1 = obj[0].ConsumerTypeId;
+                        ConsumerTypeId3 = obj[1].ConsumerTypeId;
+                        ConsumerTypeId4 = obj[2].ConsumerTypeId;
+                        // slabid = obj[0].SlabId;
+                       // alert(ConsumerTypeId1 + ',' + ConsumerTypeId3 + ',' + ConsumerTypeId4);
+                        price1 = obj[0].Price;
+                        price2 = obj[1].Price;
+                        price3 = obj[2].Price;
+                        price4 = obj[3].Price;
+                    }
+                    else {
+                        //Materialize.toast('Invalid Search Keyword', 4000);
+                        //$("#lblLogError").html(error);
+                    }
+                },
+                error: function (requestObject, error, errorThrown) {
+                }
+            });
+        }
+        function myfunction(msg) {
+            window.plugins.spinnerDialog.hide();
+            var i;
+            var consumption = _CurrentConsumption;
+            if (ConsumerTypeId1 == 1) {
+                if (consumption <= 8) {
+                    rate1 = (8 * price1).toFixed(2);
+                    usage1 = consumption.toFixed(2);
+                }
+                else if (consumption <= 15 && consumption >= 8.1) {
+                    consump1 = (consumption - 8).toFixed(2);
+                    usage1 = 8;
+                    usage2 = consump1;
+                    rate1 = (usage1 * price1).toFixed(2);
+                    rate2 = (usage2 * price2).toFixed(2);
+                }
+                else if (consumption <= 25 && consumption >= 15.1) {
+                    consump1 = (consumption - 8).toFixed(2);
+                    usage1 = 8;
+                    consump2 = (consump1 - 7).toFixed(2);
+                    usage2 = 7;
+                    usage3 = consump2;
+                    rate1 = (usage1 * price1).toFixed(2);
+                    rate2 = (usage2 * price2).toFixed(2);
+                    rate3 = (usage3 * price3).toFixed(2);
+                }
+                else {
+                    consump1 = (consumption - 8).toFixed(2);
+                    usage1 = 8;
+                    consump2 = (consump1 - 7).toFixed(2);
+                    usage2 = 7;
+                    consump3 = (consump2 - 9).toFixed(2);
+                    usage3 = 9;
+                    usage4 = consump3;
+                    rate1 = (usage1 * price1).toFixed(2);
+                    rate2 = (usage2 * price2).toFixed(2);
+                    rate3 = (usage3 * price3).toFixed(2);
+                    rate4 = (usage4 * price4).toFixed(2);
+
+                }
+            }
+            else if (ConsumerTypeId1 == 3) {
+
+                if (consumption <= 8) {
+                    rate1 = (8 * price1).toFixed(2);
+                    usage1 = consumption.toFixed(2);
+                }
+                else if (consumption <= 15 && consumption >= 8.1) {
+                    consump1 = (consumption - 8).toFixed(2);
+                    usage1 = 8;
+                    usage2 = consump1;
+                    rate1 = (usage1 * price1).toFixed(2);
+                    rate2 = (usage2 * price2).toFixed(2);
+
+                }
+                else if (consumption <= 25 && consumption >= 15.1) {
+                    consump1 = (consumption - 8).toFixed(2);
+                    usage1 = 8;
+                    consump2 = (consump1 - 7).toFixed(2);
+                    usage2 = 7;
+                    usage3 = consump2;
+                    rate1 = (usage1 * price1).toFixed(2);
+                    rate2 = (usage2 * price2).toFixed(2);
+                    rate3 = (usage3 * price3).toFixed(2);
+
+                }
+                else {
+                    consump1 = (consumption - 8).toFixed(2);
+                    usage1 = 8;
+                    consump2 = (consump1 - 7).toFixed(2);
+                    usage2 = 7;
+                    consump3 = (consump2 - 9).toFixed(2);
+                    usage3 = 9;
+                    usage4 = consump3;
+                    rate1 = (usage1 * price1).toFixed(2);
+                    rate2 = (usage2 * price2).toFixed(2);
+                    rate3 = (usage3 * price3).toFixed(2);
+                    rate4 = (usage4 * price4).toFixed(2);
+
+                }
+            }
+            else {
+                if (ConsumerTypeId1 == 4) {
+                    if (consumption <= 8) {
+                        rate1 = (8 * price1).toFixed(2);
+                        usage1 = consumption.toFixed(2);
+                    }
+                    else if (consumption <= 15 && consumption >= 8.1) {
+                        consump1 = (consumption - 8).toFixed(2);
+                        usage1 = 8;
+                        usage2 = consump1;
+                        rate1 = (usage1 * price1).toFixed(2);
+                        rate2 = (usage2 * price2).toFixed(2);
+
+                    }
+                    else if (consumption <= 25 && consumption >= 15.1) {
+                        consump1 = (consumption - 8).toFixed(2);
+                        usage1 = 8;
+                        consump2 = (consump1 - 7).toFixed(2);
+                        usage2 = 7;
+                        usage3 = consump2;
+                        rate1 = (usage1 * price1).toFixed(2);
+                        rate2 = (usage2 * price2).toFixed(2);
+                        rate3 = (usage3 * price3).toFixed(2);
+
+                    }
+                    else {
+                        consump1 = (consumption - 8).toFixed(2);
+                        usage1 = 8;
+                        consump2 = (consump1 - 7).toFixed(2);
+                        usage2 = 7;
+                        consump3 = (consump2 - 9).toFixed(2);
+                        usage3 = 9;
+                        usage4 = consump3;
+                        rate1 = (usage1 * price1).toFixed(2);
+                        rate2 = (usage2 * price2).toFixed(2);
+                        rate3 = (usage3 * price3).toFixed(2);
+                        rate4 = (usage4 * price4).toFixed(2);
+
+                    }
+                }
+                else { }
+
+            }
+            console.log(usage1);
+            console.log(rate1);
+            console.log(usage2);
+            console.log(rate2);
+            console.log(usage3);
+            console.log(rate3);
+            console.log(usage4);
+            console.log(rate4);
+
+            var obj = JSON.parse(msg.d);
+            var CHAR_ESC = '\t'; var LINE_FEED = '\n'; var CARRIAGE_RETURN = '\r'; var hr = '________________________________________________';
+            // var Vartical = '\x0B';
+            var newLine = '\x0A';
+            var printedData = CHAR_ESC +'{b}KUWS BIJAPUR WATER DEMAND NOTICE{/b}' + LINE_FEED + hr + LINE_FEED + 
+                '{left}Bill No.' + CHAR_ESC + CHAR_ESC + ':' + obj[0].BillId + CARRIAGE_RETURN + LINE_FEED +
+                'Bill Date' + CHAR_ESC + CHAR_ESC + ':' + obj[0].ReadingDate + CARRIAGE_RETURN + LINE_FEED +
+                'Consumer ID' + CHAR_ESC + CHAR_ESC + ':' + obj[0].ConnectionId + CARRIAGE_RETURN + LINE_FEED +
+                'Water Meter No.' + CHAR_ESC + CHAR_ESC + ':' + obj[0].MeterNumber + CARRIAGE_RETURN + LINE_FEED +
+                hr +
+                'KWB No.' + CHAR_ESC + CHAR_ESC + CHAR_ESC + ':' + obj[0].KWBNumber + CARRIAGE_RETURN + LINE_FEED +
+                'Consumer Name' + CHAR_ESC + CHAR_ESC + ':' + completeName + CARRIAGE_RETURN + LINE_FEED +
+                'Address1' + CHAR_ESC + CHAR_ESC + ':' + obj[0].AddressLine1 + CARRIAGE_RETURN + LINE_FEED +
+                'Address2' + CHAR_ESC + CHAR_ESC + ':' + obj[0].AddressLine2 + CARRIAGE_RETURN + LINE_FEED +
+                'Phone No.' + CHAR_ESC + CHAR_ESC + ':' + obj[0].ContactNumber + CARRIAGE_RETURN + LINE_FEED +
+                'Ward No.' + CHAR_ESC + CHAR_ESC + ':' + obj[0].ZoneName + CARRIAGE_RETURN + LINE_FEED +
+                //'Sub-Zone Name' + CHAR_ESC + CHAR_ESC + ':' + obj[0].MeterNumber + CARRIAGE_RETURN + LINE_FEED +
+                hr +
+                'Meter Reading Date' + CHAR_ESC + ':' + obj[0].ReadingDate + CARRIAGE_RETURN + LINE_FEED +
+                'Bill Period' + CHAR_ESC + CHAR_ESC + ':' + obj[0].ReadingDate + CARRIAGE_RETURN + LINE_FEED +
+                'Water Meter Status' + CHAR_ESC + ':' + wms + CARRIAGE_RETURN + LINE_FEED +
+
+                hr +
+                'Terrif' + CHAR_ESC + CHAR_ESC + CHAR_ESC + ':' + obj[0].ConsumerType + CARRIAGE_RETURN + LINE_FEED +
+                'Present Reading' + CHAR_ESC + CHAR_ESC + ':' + obj[0].Reading + CARRIAGE_RETURN + LINE_FEED +
+                'Previous Reading' + CHAR_ESC + ':' + obj[0].PreviousReading + CARRIAGE_RETURN + LINE_FEED +
+                //'Previous Bill Paid Date' + CHAR_ESC + ':' + obj[0].ReadingDate + CARRIAGE_RETURN + LINE_FEED +
+                'Total Consumption(KL)' + CHAR_ESC + ':' + obj[0].CurrentConsumption + CARRIAGE_RETURN + LINE_FEED +
+                'Consumption' + CHAR_ESC + CHAR_ESC + ':' + CARRIAGE_RETURN + LINE_FEED + LINE_FEED +
+                CHAR_ESC + CHAR_ESC + 'Slab Rates ' + LINE_FEED +
+                CHAR_ESC + 'Min(KL)' + CHAR_ESC + 'Max(KL)' + CHAR_ESC + 'Usage' + CHAR_ESC + 'Amount' + CARRIAGE_RETURN + LINE_FEED +
+                //consumption start here
+                CHAR_ESC + '0' + CHAR_ESC + '8' + CHAR_ESC + usage1 + CHAR_ESC + 'Rs.' + rate1 + CARRIAGE_RETURN + LINE_FEED +
+                CHAR_ESC + '9' + CHAR_ESC + '15' + CHAR_ESC + usage2 + CHAR_ESC + 'Rs.' + rate2 + CARRIAGE_RETURN + LINE_FEED +
+                CHAR_ESC + '16' + CHAR_ESC + '25' + CHAR_ESC + usage3 + CHAR_ESC + 'Rs.' + rate3 + CARRIAGE_RETURN + LINE_FEED +
+                CHAR_ESC + '26' + CHAR_ESC + 'Above' + CHAR_ESC + usage4 + CHAR_ESC + 'Rs.' + rate4 + CARRIAGE_RETURN + LINE_FEED +
+                hr +
+                'Fixed Charges' + CHAR_ESC + CHAR_ESC + ':Rs.58.88' + CARRIAGE_RETURN + LINE_FEED +
+                'Current Water Charges' + CHAR_ESC + ':Rs.' + Total + CARRIAGE_RETURN + LINE_FEED +
+                'Arrears' + CHAR_ESC + CHAR_ESC + CHAR_ESC + ':Rs.' + obj[0].Arrears + CARRIAGE_RETURN + LINE_FEED +
+                'Late Fee' + CHAR_ESC + CHAR_ESC + ':Rs.' + obj[0].DueAmount + CARRIAGE_RETURN + LINE_FEED +
+                hr +
+                '{b}Grand Total' + CHAR_ESC + CHAR_ESC + ':Rs.' + obj[0].BillAmount + '{/b}' + CARRIAGE_RETURN + LINE_FEED +
+                'Due Date' + CHAR_ESC + CHAR_ESC + ':' + obj[0].DueDate + LINE_FEED + LINE_FEED +
+                'Meter Reader' + CHAR_ESC + CHAR_ESC + ':' + UserName + CARRIAGE_RETURN + LINE_FEED + LINE_FEED;
+            //code start connect with printer
+            window.DatecsPrinter.listBluetoothDevices(
+                function (devices) {
+                    window.DatecsPrinter.connect(devices[0].address,
+                        function () {
+                            printSomeTestText();
+                        },
+                        function () {
+                            alert(JSON.stringify(error));
+                        }
+                    );
+                },
+                function (error) {
+                    alert(JSON.stringify(error));
+                }
+            );
+            //code end connect with printer
+
+            //code for to print text
+            function printSomeTestText() {
+                window.DatecsPrinter.printText(printedData, 'ISO-8859-1',
+                    function () {
+                        printMyImage();
+                    }
+                );
+            }
+            //end text print
+
+            //code for printing a barcode
+            function printMyImage() {
+                var c = document.getElementById("myCanvas");
+                var ctx = c.getContext("2d");
+                var img = document.getElementById("barcode3");
+                ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, c.width, c.height);     // source rectangle
+                var imageData = c.toDataURL('image/jpeg').replace(/^data:image\/(png|jpg|jpeg);base64,/, "");
+
+                window.DatecsPrinter.printImage(
+                    imageData, //base64
+                    c.width,
+                    c.height,
+                    1,
+                    function () {
+                        //printfeedPaper();
+                    },
+                    function (error) {
+                        alert(JSON.stringify(error));
+                    }
+                )
+                printfeedPaper();
+            }
+            var lines = '\n';
+            function printfeedPaper() {
+                window.DatecsPrinter.feedPaper(lines, i,
+                    function () {
+                    }
+                );
+            }
+            document.getElementById("myCanvas").style.display = 'none';
+            //location.href = 'ConsumerBilling.html';
+        }
+
+    </script>
+
+</head>
+<body>
+    <form action="" id="form1">
+        <nav class="white" role="navigation" style="border-bottom: solid thin #ccc;">
+            <div class="container">
+
+                <a style="color:black; font-size:medium;" class="brand-logo">
+                    Monthly Billing
+                </a>
+                <a data-target="modal1" id="btnLogout" style="color:black" class="right">
+                    <i class="fa fa-sign-out" style="margin-top:20px;"></i>
+                </a>
+
+                <ul class="right hide-on-med-and-down" style="display:none;">
+                    <li class="logo"><img alt="" src="#" width="40px" height="40px" /> </li>
+                    <li><img alt="" style="height:60px;" class="circle nav-wrapper" src="#" /></a></li>
+                    <li><a class="waves-effect waves-teal" style="color:black;" href="AlertList.html">Alert List</a></li>
+                    <li><a class="waves-effect waves-teal" style="color:black;" href="ChangeZone.html">Change Zones</a></li>
+                    <li><a class="waves-effect waves-teal" style="color:black;" href="ManualAlert.html">Manual Alert</a></li>
+                    <li><a class="waves-effect waves-teal" style="color:black;" href="MealLog.html">Meal Log</a></li>
+                    <li><a class="waves-effect waves-teal" style="color:black;" href="Break.html">Break</a></li>
+                    <li><a class="waves-effect waves-teal" style="color:black;" href="Performance.html">Performance</a></li>
+                    <li><a class="waves-effect waves-teal" style="color:black;" href="DownLog.html">Down Log?</a></li>
+                </ul>
+
+                <ul id="nav-mobile" class="side-nav white">
+                    <li>
+                        <div class="valign-wrapper col s12">
+
+                            <div style="margin-left:20px;" class="col s6">
+                                <span class="" style="color:black;">
+                                    Hello, <strong class="blue-text" id="lblUserName"></strong>
+                                </span>
+                            </div>
+                            <div class="col s2" style="float:right; margin-left:50px;">
+                                <a id="btnClose" href="#" data-activates="" class="" style="color:black;">x</a>
+                            </div>
+                        </div>
+
+                    </li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="AlertList.html" style="color:black;"> <i class="large material-icons" style="color:black;">toc</i>Alert List</a></li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="ChangeZone.html" style="color:black;"><i class="large material-icons" style="color:black;">swap_horiz</i>Change Zones</a></li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="ManualAlert.html" style="color:black;"><i class="large material-icons" style="color:black;">library_add</i>Manual Alert</a></li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="MealLog.html" style="color:black;"><i class="large material-icons" style="color:black;">label_outline</i>Meal Log</a></li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="Break.html" style="color:black;"><i class="large material-icons" style="color:black;">pause</i>Break</a></li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="Performance.html" style="color:black;"><i class="large material-icons" style="color:black;">equalizer</i>Performance</a></li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="DownLog.html" style="color:black;"><i class="large material-icons" style="color:black;">trending_down</i>Down Log?</a></li>
+                    <div class="" style="padding-top:auto;">
+                        <li><a data-target="modal1" id="lOut" class="waves-effect waves-teal teal-text" href="#"><i class="fa fa-sign-out"></i>Log out</a></li>
+                    </div>
+                </ul>
+
+                <a href="#" data-activates="nav-mobile" class="button-collapse" style="color:black"><i class="fa fa-bars"></i></a>
+
+            </div>
+
+        </nav>
+
+        <div class="row">
+            <div class="col s12 m12">
+                <div class="col s6 m6">
+                    <div class="card z-depth-2  darken-1">
+                        <div class="center" style="font-size:20px;color: #e57373;padding:5px;">
+                            <input type="checkbox" class="example" id="chkSearchbyMeterNo" name="CHECKBOX_1" />
+                            <label for="chkSearchbyMeterNo">
+                            </label>
+                        </div>
+                        <div class="card-content">
+                            <center> <span class="black-text "> Meter No</span><br /></center>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col s6 m6">
+                    <div class="card z-depth-2  darken-1">
+
+                        <div class="center" style="font-size:20px;color: #e57373;padding:5px;">
+                            <input type="checkbox" class="example" id="chkSearchbyName" name="CHECKBOX_2" />
+                            <label for="chkSearchbyName">
+                            </label>
+                        </div>
+                        <div class="card-content">
+                            <center> <span class="black-text ">Name</span><br /></center>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col s6 m6">
+                    <div class="card z-depth-2  darken-1">
+
+                        <div class="center" style="font-size:20px;color: #e57373;padding:5px;">
+                            <input type="checkbox" class="example" id="chkSearchbyKWCNo" name="CHECKBOX_3" />
+                            <label for="chkSearchbyKWCNo">
+                            </label>
+                        </div>
+                        <div class="card-content">
+                            <center> <span class="black-text "> KWB No</span><br /></center>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col s6 m6">
+                    <div class="card z-depth-2  darken-1">
+                        <div class="center" style="font-size:20px;color: #e57373;padding:5px;">
+                            <input type="checkbox" class="example" id="chkSearchbyMobileNo" name="CHECKBOX_3" />
+                            <label for="chkSearchbyMobileNo">
+                            </label>
+                        </div>
+                        <div class="card-content">
+                            <center> <span class="black-text ">Mobile No</span><br /></center>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+        <div style="margin-top:20px;">
+            <div class="row" style="margin-top:20px;">
+                <div class=" col s12">
+                    <div class="input-field">
+                        <input id="SearchKeyWord" type="text" class="validate" />
+                        <label for="SearchKeyWord">Search KeyWord</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" style=" background-color:white; margin-top:20px">
+            <div class="col s6">
+                <div class="input-field">
+                    <input id="txtFromReadingDate" type="date" class="validate" style="border-bottom:solid thin #e57373;" />
+
+                </div>
+            </div>
+            <div class="col s6">
+                <div class="input-field">
+                    <input id="txtToReadingDate" type="date" class="validate" style="border-bottom:solid thin #e57373;" />
+
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s6">
+                <button id="btnCancel" style="margin-bottom:15px;" class="btn waves-effect waves-light col s12 blue darken-1 waves-orange" type="button" name="action"> Cancel</button>
+            </div>
+            <div class="input-field col s6">
+                <button id="btnSubmit" style="margin-bottom:15px;" class="btn waves-effect waves-light col s12 blue darken-1 waves-orange" type="button" name="action">Submit </button>
+            </div>
+        </div>
+
+        <div class="" style="padding:10px" id="ConsumerInfo">
+            <!--<table id="table2" class="table striped">
+            <tbody>
+                <tr>
+                    <td>Connection Id:</td>
+                    <td><span id="spnConnectionId"></span></td>
+
+                </tr>
+                <tr>
+                    <td>Bill No:</td>
+                    <td><span id="spnBillId"></span></td>
+                </tr>
+                <tr>
+                    <td>From Date:</td>
+                    <td><span id="spnFromDate"></span></td>
+
+                </tr>
+                <tr>
+                    <td>To Date:</td>
+                    <td><span id="spnToDate"></span></td>
+
+                </tr>
+                <tr>
+                    <td>Consumer Name:</td>
+                    <td><span id="spnConsumerName"></span></td>
+
+                </tr>
+                <tr>
+                    <td>Water Meter No:</td>
+                    <td><span id="spnMeterNo"></span></td>
+
+                </tr>
+                <tr>
+                    <td>KWB No:</td>
+                    <td><span id="spnKWCNo"></span></td>
+
+                </tr>
+                <tr>
+                    <td>Terrif Present:</td>
+                    <td><span id="spnTerrifPresent"></span></td>
+
+                </tr>
+                <tr>
+                    <td>Zone Name:</td>
+                    <td><span id="spnZoneName"></span></td>
+
+                </tr>
+                <tr>
+                    <td>SubZone Name:</td>
+                    <td><span id="spnSubZoneName"></span></td>
+
+                </tr>
+                <tr>
+                    <td>Address:</td>
+                    <td><span id="spnAddress"></span></td>
+
+                </tr>
+                <tr>
+                    <td>PinCode:</td>
+                    <td><span id="spnPinCode"></span></td>
+
+                </tr>
+                <tr>
+                    <td>Phone No:</td>
+                    <td>
+                        <i class="fa fa-phone" style="font-size:18px;color:#0089ec;"></i> <a id="spnPhoneNo"> &nbsp;&nbsp;&nbsp;</a>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Previous Billing Date:</td>
+                    <td><span id="spnPreviousBillingDate"></span></td>
+
+                </tr>
+                <tr>
+                    <td>Previous Reading:</td>
+                    <td><span id="spnPreviousReading"></span></td>
+
+                </tr>
+                <tr>
+                    <td>Previous Consumption(KL):</td>
+                    <td><span id="spnPreviousConsumption"></span></td>
+                </tr>
+                <tr>
+                    <td>Current Reading(KL):</td>
+                    <td><span id="spnCurrentReading"></span></td>
+                </tr>
+                <tr>
+                    <td>Current Consumption(KL):</td>
+                    <td><span id="spnCurrentConsumption"></span></td>
+                </tr>
+                <tr>
+                    <td>Current Bill Pay Amount:</td>
+                    <td><span id="spnCurrentBillPayAmount"></span></td>
+                </tr>
+                <tr>
+                    <td>Issue Date:</td>
+                    <td><span id="spnIssueDate"></span></td>
+                </tr>
+                <tr>
+                    <td>Due Bill Date:</td>
+                    <td><span id="spnDueBillDate"></span></td>
+                </tr>
+                <tr>
+                    <td>Due Bill Pay Amount:</td>
+                    <td><span id="spnDueBillPayAmount"></span></td>
+                </tr>
+                <tr>
+                    <td>Bill Status:</td>
+                    <td><span id="spnBillStatus"></span></td>
+                </tr>
+                <tr>
+                    <td>Bill Status:</td>
+                    <td><span id="spnIsDoorLock"></span></td>
+                </tr>
+            </tbody>
+        </table>-->
+            <table id="table2" class="table striped">
+                <tbody>
+                    <tr>
+                        <td>Bill No:</td>
+                        <td><span id="spnBillId"></span></td>
+                    </tr>
+                    <tr>
+                        <td>Bill Date:</td>
+                        <td><span id="spnBillDate"></span></td>
+
+                    </tr>
+                    <tr>
+                        <td>Consumer ID:</td><!--consumer id means connection id for developer-->
+                        <td><span id="spnConnectionId"></span></td>
+
+                    </tr>
+                    <tr>
+                        <td>Water Meter No:</td>
+                        <td><span id="spnMeterNo"></span></td>
+
+                    </tr>
+
+                    <tr>
+                        <td>KWB No:</td>
+                        <td><span id="spnKWCNo"></span></td>
+
+                    </tr>
+                    <tr>
+                        <td>Consumer Name:</td>
+                        <td><span id="spnConsumerName"></span></td>
+
+                    </tr>
+                    <tr>
+                        <td>Address1:</td>
+                        <td><span id="spnAddress"></span></td>
+
+                    </tr>
+                    <tr>
+                        <td>Address2:</td>
+                        <td><span id="spnAddress2"></span></td>
+
+                    </tr>
+                    <tr>
+                        <td>Phone No:</td>
+                        <td>
+                            <i class="fa fa-phone" style="font-size:18px;color:#0089ec;"></i> <a id="spnPhoneNo"> &nbsp;&nbsp;&nbsp;</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Ward No:</td>
+                        <td><span id="spnZoneName"></span></td>
+
+                    </tr>
+
+                    <tr>
+                        <td>Reading Date:</td>
+                        <td><span id="spnReadingDate"></span></td>
+                    </tr>
+                    <tr>
+                        <td>Bill Period:</td>
+                        <td><span id="spnBillPeriod"></span></td>
+
+                    </tr>
+                    <tr>
+                        <td>Water Meter Status: </td>
+                        <td><span id="spnWaterMeterStatus"></span></td>
+
+                    </tr>
+                    <tr>
+                        <td>Terrif:</td>
+                        <td><span id="spnTerrifPresent"></span></td>
+
+                    </tr>
+
+                    <tr>
+                        <td>Present Reading(KL):</td>
+                        <td><span id="spnCurrentReading"></span></td>
+                    </tr>
+                    <tr>
+                        <td>Previous Reading:</td>
+                        <td><span id="spnPreviousReading"></span></td>
+
+                    </tr>
+                    <tr>
+                        <td>Total Consumption(KL):</td>
+                        <td><span id="spnTotalConsumption"></span></td>
+                    </tr>
+                    <tr>
+                        <td>Fixed Charges:</td>
+                        <td><span id="spnFixedCharges"></span></td>
+
+                    </tr>
+                    <tr>
+                        <td>Current Water Charges:</td>
+                        <td><span id="spnCurrentBillPayAmount"></span></td>
+                    </tr>
+                    <tr>
+                        <td>Arrears:</td>
+                        <td><span id="spnArrears"></span></td>
+                    </tr>
+                    <tr>
+                        <td>Late Fee:</td>
+                        <td><span id="spnDueBillPayAmount"></span></td>
+                    </tr>
+                    <tr>
+                        <td>Grand Total:</td>
+                        <td><span id="spnGrandTotalPayAmount"></span></td>
+                    </tr>
+                    <tr>
+                        <td>Due Bill Date:</td>
+                        <td><span id="spnDueBillDate"></span></td>
+                    </tr>
+                    <tr>
+                        <td>Meter Reader:</td>
+                        <td><span id="spnMeterReader"></span></td>
+                    </tr>
+                    <!--<tr>
+                    <td>PinCode:</td>
+                    <td><span id="spnPinCode"></span></td>
+
+                </tr>-->
+                    <!--<tr>
+                    <td>Previous Billing Date:</td>
+                    <td><span id="spnPreviousBillingDate"></span></td>
+
+                </tr>
+
+                <tr>
+                    <td>Previous Consumption(KL):</td>
+                    <td><span id="spnPreviousConsumption"></span></td>
+                </tr>
+
+                <tr>
+                    <td>Current Consumption(KL):</td>
+                    <td><span id="spnCurrentConsumption"></span></td>
+                </tr>
+                <tr>
+                    <td>Current Bill Pay Amount:</td>
+                    <td><span id="spnCurrentBillPayAmount"></span></td>
+                </tr>
+                <tr>
+                    <td>Issue Date:</td>
+                    <td><span id="spnIssueDate"></span></td>
+                </tr>
+
+                <tr>
+                    <td>Due Bill Pay Amount:</td>
+                    <td><span id="spnDueBillPayAmount"></span></td>
+                </tr>
+                <tr>
+                    <td>Bill Status:</td>
+                    <td><span id="spnBillStatus"></span></td>
+                </tr>-->
+                </tbody>
+            </table>
+        </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12">
+                <img id="barcode3" />
+                <canvas id="myCanvas" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s6">
+                <button id="btnPrint" style="margin-bottom:15px;" class="btn waves-effect waves-light col s12 blue darken-1 waves-orange" type="button" name="action"> Print</button>
+            </div>
+            <div class="input-field col s6">
+                <button id="btnCancel" style="margin-bottom:15px;" class="btn waves-effect waves-light col s12 blue darken-1 waves-orange" type="button" name="action"> Cancel</button>
+            </div>
+
+        </div>
+
+        <!-- Modal Structure -->
+        <div id="modal1" class="modal">
+            <div class="modal-content">
+                <span><i class="fa fa-exclamation-triangle yellow-text left" style="font-size:medium;"></i></span>
+                <span class="teal-text">Are you sure to logout?</span>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class=" modal-action teal white-text modal-close waves-effect waves-green btn-flat">No</a>
+                <a href="#!" id="btnOut" class=" modal-action red white-text modal-close  waves-effect waves-green btn-flat left">Yes</a>
+            </div>
+        </div>
+
+    </form>
+
+</body>
+</html>

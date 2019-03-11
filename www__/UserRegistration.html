@@ -1,0 +1,340 @@
+﻿
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" />
+    <title></title>
+    <script type="text/javascript" src="assets/js/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="assets/js/materialize.js"></script>
+    <script type="text/javascript" src="assets/js/jquery.validate.js"></script>
+    <script type="text/javascript" src="assets/js/init.js"></script>
+    <link href="assets/css/custom.css" rel="stylesheet" type="text/css" />
+    <link href="assets/css/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection" />
+    <link href="assets/css/ghpages-materialize.css" type="text/css" rel="stylesheet" media="screen,projection" />
+    <link href="assets/css/style.css" type="text/css" rel="stylesheet" media="screen,projection" />
+    <link rel="stylesheet" type="text/css" href="assets/css/font-awesome.min.css" media="all" />
+    <script src="assets/js/jquery.dropdown.js"></script>
+    <script type="text/javascript" src="cordova.js"></script>
+    <style type="text/css">
+        #toast-container {
+            background-color: #F44336 !important;
+        }
+
+        .toast {
+            background-color: #F44336 !important;
+            font-size: small;
+        }
+
+        .fontTital {
+            font-size: 20px;
+            color: yellow;
+        }
+
+        .card .card-content {
+            padding: 4px !important;
+        }
+
+        .carousel {
+            max-height: 50px;
+        }
+
+        .carousel-item {
+            max-width: 60px;
+        }
+
+        .row {
+            margin-bottom: 0px;
+        }
+
+        input:not([type]), input[type=text], input[type=password], input[type=email], input[type=url], input[type=time], input[type=date], input[type=datetime], input[type=datetime-local], input[type=tel], input[type=number], input[type=search], textarea.materialize-textarea {
+            margin: 0 0 0 0 !important;
+            border-bottom: 1px solid #0089ec;
+        }
+
+            input:not([type]).valid, input:not([type]):focus.valid, input[type=text].valid, input[type=text]:focus.valid, input[type=password].valid, input[type=password]:focus.valid, input[type=email].valid, input[type=email]:focus.valid, input[type=url].valid, input[type=url]:focus.valid, input[type=time].valid, input[type=time]:focus.valid, input[type=date].valid, input[type=date]:focus.valid, input[type=datetime].valid, input[type=datetime]:focus.valid, input[type=datetime-local].valid, input[type=datetime-local]:focus.valid, input[type=tel].valid, input[type=tel]:focus.valid, input[type=number].valid, input[type=number]:focus.valid, input[type=search].valid, input[type=search]:focus.valid, textarea.materialize-textarea.valid, textarea.materialize-textarea:focus.valid {
+                border-bottom: 1px solid #0089ec;
+                box-shadow: 0 1px 0 0 #0089ec;
+            }
+        body {
+            background-color: #fff;
+        }
+    </style>
+    <script type="text/javascript">
+        // var webIP = 'http://192.168.1.22/jiwb/';  //Junaid Server
+        // var webIP = 'http://192.168.0.108/jiwb/'; //Hotel
+        //var webIP = 'http://192.168.1.25/jiwb/';    //Self
+        var allowsubmit = false;
+        var error = "";
+        var deviceIMEI_NO = localStorage.getItem("deviceIMEI_NO");
+        //Load Start
+        $(function () {
+
+            $("#txtUserId").change(function () {
+                prc_user_name_is_exixts($("#txtUserId").val());
+            });
+
+            $('#ddlProject').dropdown({ pAction: 1, pLookUpId: 0, pLookUpType: 0, pSelectionType: 0 });
+            $('select').material_select();
+            $('.carousel.carousel-slider').carousel({ full_width: true });
+            $("#btnLogout").click(function () {
+                $('#modal1').modal({});
+            });
+            $("#btnOut").click(function () {
+                location.href = "index.html";
+            });
+            $("#btnClose").click(function () {
+                $('#sidenav-overlay').trigger('click');
+            });
+            $("#lOut").click(function () {
+                $('#modal1').modal({});
+            });
+            $("#txtConfirmPassword").keyup(function () {
+                var pass = $("#txtPassword").val();
+                var cpass = $(this).val();
+                if (pass == cpass) {
+                    $('.error').text('');
+                    allowsubmit = true;
+                }
+                else {
+                    $('.error').text('Password not matching');
+                    allowsubmit = false;
+                }
+            });
+        });
+        //Load End
+        function validError() {
+            var errorcount = 0;
+            var email = document.getElementById('txtEmail');
+            var filter = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+            if (errorcount == 0) {
+                if ($("#txtUserId").val().length == 0) {
+                    Materialize.toast('User ID required', 4000);
+                    $("#lblLogError").html(error);
+                    errorcount = 1;
+                }
+                else if ($("#txtFirstName").val().length == 0) {
+                    Materialize.toast('First Name required', 4000);
+                    $("#lblLogError").html(error);
+                    errorcount = 1;
+                }
+                else if ($("#txtLastName").val().length == 0) {
+                    Materialize.toast('Last Name required', 4000);
+                    $("#lblLogError").html(error);
+                    errorcount = 1;
+                }
+                else if ($("#ddlProject").val() == "0") {
+                    Materialize.toast('Select Project', 4000);
+                    $("#lblLogError").html(error);
+                    errorcount = 1;
+                }
+                else if ($("#txtTelephone").val().length != 10) {
+                    Materialize.toast('Mobile No Should be 10 digite', 4000);
+                    $("#lblLogError").html(error);
+                    errorcount = 1;
+                }
+                else if ($("#txtEmail").val().length == 0) {
+                    Materialize.toast('Email Id required', 4000);
+                    $("#lblLogError").html(error);
+                    errorcount = 1;
+                }
+                else if (!filter.test(email.value)) {
+                    Materialize.toast('Enter Valid Email Id', 4000);
+                    $("#lblLogError").html(error);
+                    errorcount = 1;
+                    email.focus;
+                }
+
+                else if ($("#txtPassword").val().length == 0) {
+                    Materialize.toast(' Password is required', 4000);
+                    $("#lblLogError").html(error);
+                    errorcount = 1;
+                }
+
+                else if ($("#txtConfirmPassword").val().length == 0) {
+                    Materialize.toast('Confirm Password is required', 4000);
+                    $("#lblLogError").html(error);
+                    errorcount = 1;
+                }
+
+                else {
+                    setControlls();
+                }
+            }
+        }
+        prc_device_user_registration_set = function (pProjectId, pRoleId, pUserName, pPassword, pFirstName, pMiddleName, pLastName, pEmail, pContactNumber, pCreatedBy, deviceIMEI_NO, pisActive) {
+            $.ajax({
+                async: false,
+                url: webIP + "JIWB_Service.asmx/prc_device_user_registration_set",
+                data: JSON.stringify({ pProjectId: pProjectId, pRoleId: pRoleId, pUserName: pUserName, pPassword: pPassword, pFirstName: pFirstName, pMiddleName: pMiddleName, pLastName: pLastName, pEmail: pEmail, pContactNumber: pContactNumber, pCreatedBy: pCreatedBy, deviceIMEI_NO: deviceIMEI_NO, pisActive: pisActive }),
+                dataType: "json",
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                success: function (msg) {
+                    var obj = JSON.parse(msg.d);
+                    location.href = "index.html";
+                    window.plugins.spinnerDialog.show();
+                },
+                error: function (requestObject, error, errorThrown) {
+                }
+            });
+        }
+        function setControlls() {
+            window.plugins.spinnerDialog.show();
+            pProjectId = 1;//$("#ddlProject").val();
+            pRoleId = 5;
+            pUserName = $("#txtUserId").val();
+            pPassword = $("#txtPassword").val();
+            pFirstName = $("#txtFirstName").val();
+            pMiddleName = ''
+            pLastName = $("#txtLastName").val();;
+            pEmail = $("#txtEmail").val();
+            pContactNumber = $("#txtTelephone").val();
+            pCreatedBy = 0;
+            pisActive = false;
+            prc_device_user_registration_set(pProjectId, pRoleId, pUserName, pPassword, pFirstName, pMiddleName, pLastName, pEmail, pContactNumber, pCreatedBy, deviceIMEI_NO, pisActive);
+        }
+        prc_user_name_is_exixts = function (pUserID) {
+
+            //postData = {
+            //    pUserID: pUserID
+            //};
+            $.ajax({
+                async: false,
+                type: "POST",
+                url: webIP + "JIWB_Service.asmx/prc_user_name_is_exixts",
+                data: JSON.stringify({ pUserID: pUserID }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (msg) {
+                    var obj = JSON.parse(msg.d);
+                    if (obj[0].UserExist != 'TRUE') {
+                        Materialize.toast('User ID already exists', 5000);
+                        $("#lblLogError").html(error);
+                        errorcount = 1;
+                    }
+                },
+                error: function (requestObject, error, errorThrown) {
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <form action="" id="frmUserRegistration">
+        <nav class="white" role="navigation" style="border-bottom: solid thin #ccc;">
+            <div class="container">
+
+                <a style="color:black; font-size:medium;" class="brand-logo">
+                    <h7><center>Registration Form </center></h7>
+                </a>
+                <a data-target="modal1" id="btnLogout" style="color:black" class="right">
+                    <i class="fa fa-sign-out" style="margin-top:20px;display:none;"></i>
+                </a>
+                <ul class="right hide-on-med-and-down">
+                    <li class="logo"><img alt="" src="" width="40px" height="40px" /> </li>
+                    <li><img alt="" style="height:60px;" class="circle nav-wrapper" src="assets/images/profile-img.jpg" /></a></li>
+                    <li><a class="waves-effect waves-teal" style="color:White;" href="AlertList.html">Alert List</a></li>
+                    <li><a class="waves-effect waves-teal" style="color:White;" href="ChangeZone.html">Change Zones</a></li>
+                    <li><a class="waves-effect waves-teal" style="color:White;" href="ManualAlert.html">Manual Alert</a></li>
+                    <li><a class="waves-effect waves-teal" style="color:White;" href="MealLog.html">Meal Log</a></li>
+                    <li><a class="waves-effect waves-teal" style="color:White;" href="Break.html">Break</a></li>
+                    <li><a class="waves-effect waves-teal" style="color:White;" href="Performance.html">Performance</a></li>
+                    <li><a class="waves-effect waves-teal" style="color:White;" href="DownLog.html">Down Log?</a></li>
+                </ul>
+                <ul id="nav-mobile" class="side-nav white">
+                    <li>
+                        <div class="valign-wrapper col s12">
+                            <div style="height:60px; margin-left:10px; margin-top:5px; margin-bottom:5px;" class="col s4">
+                                <img src="assets/images/profile-img.jpg" alt="" style="height:60px;" class="circle responsive-img" /> <!-- notice the "circle" class -->
+                            </div>
+                            <div style="margin-left:5px;" class="col s6">
+                                <span class="" style="color:black;">
+                                    Hello, <strong class="" id="lblUserName">Martin Guptil</strong>
+                                </span>
+                            </div>
+                            <div class="col s2" style="float:right; margin-left:50px;">
+                                <a id="btnClose" href="#" data-activates="" class="" style="color:black;">x</a>
+                            </div>
+                        </div>
+
+                    </li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="AlertList.html" style="color:black;"> <i class="large material-icons" style="color:black;">toc</i>Alert List</a></li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="ChangeZone.html" style="color:black;"><i class="large material-icons" style="color:black;">swap_horiz</i>Change Zones</a></li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="ManualAlert.html" style="color:black;"><i class="large material-icons" style="color:black;">library_add</i>Manual Alert</a></li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="MealLog.html" style="color:black;"><i class="large material-icons" style="color:black;">label_outline</i>Meal Log</a></li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="Break.html" style="color:black;"><i class="large material-icons" style="color:black;">pause</i>Break</a></li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="Performance.html" style="color:black;"><i class="large material-icons" style="color:black;">equalizer</i>Performance</a></li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="DownLog.html" style="color:black;"><i class="large material-icons" style="color:black;">trending_down</i>Down Log?</a></li>
+                    <div class="" style="padding-top:auto;">
+                        <li><a data-target="modal1" id="lOut" class="waves-effect waves-teal teal-text" href="#"><i class="fa fa-sign-out"></i>Log out</a></li>
+                    </div>
+                </ul>
+
+                <a href="#" data-activates="nav-mobile" class="button-collapse" style="color:black;display:none"><i class="fa fa-bars"></i></a>
+
+            </div>
+
+        </nav>
+        <div style="position: relative;overflow: auto;width: 100%; margin-left:0px;">
+            <div class="row">
+                <div class="input-field col s12">
+                    <input class="filter-input active" id="txtUserId" type="text" />
+                    <label for="last_name">User ID/Login ID</label>
+                </div>
+                <div class="input-field col s6">
+                    <input id="txtFirstName" type="text" class="filter-input" />
+                    <label for="last_name">First Name</label>
+                </div>
+                <div class="input-field col s6">
+                    <input id="txtLastName" type="text" class="filter-input" />
+                    <label for="last_name">Last Name</label>
+                </div>
+                <div class="input-field col s12" style="display:none;">
+                    <select id="ddlProject" class="browser-default" style="border-bottom: 1px solid #0089ec;"></select>
+                </div>
+
+                <div class="input-field col s12">
+                    <input id="txtTelephone" type="number" maxlength="10" class="filter-input" />
+                    <label for="Telephone">Mobile No</label>
+                </div>
+                <div class="input-field col s12">
+                    <input id="txtEmail" type="text" class="filter-input" />
+                    <label for="last_name">Email Id</label>
+                </div>
+                <div class="input-field col s12">
+                    <input id="txtPassword" type="password" class="filter-input" />
+                    <label for="password">Password</label>
+                </div>
+                <div class="input-field col s12">
+                    <input id="txtConfirmPassword" type="password" class="filter-input" />
+                    <label for="password">Confirm Password</label>
+                </div>
+
+                <div class="col s12">
+                    <span class="error" style="color:red;font-size:15px;"></span><br />
+                </div>
+                <div class="input-field col s12">
+                    <button id="btnSubmit" onclick="validError();" style="margin-bottom:15px;" class="btn waves-effect waves-light col s12 blue darken-1 waves-orange" type="button" name="action"> Submit</button>
+                </div>
+                <div class="center">
+                    <a href="index.html">Sign In </a>
+                </div>
+            </div>
+
+            <!-- Modal Structure -->
+            <div id="modal1" class="modal">
+                <div class="modal-content">
+                    <span><i class="fa fa-exclamation-triangle yellow-text left" style="font-size:medium;"></i></span>
+                    <span class="teal-text">Are you sure to logout?</span>
+                </div>
+                <div class="modal-footer">
+                    <a href="#!" class=" modal-action teal white-text modal-close waves-effect waves-green btn-flat">No</a>
+                    <a href="#!" id="btnOut" class=" modal-action red white-text modal-close  waves-effect waves-green btn-flat left">Yes</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</body>
+</html>

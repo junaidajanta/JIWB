@@ -1,0 +1,528 @@
+﻿
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" />
+    <title>User Dashboard</title>
+    <script type="text/javascript" src="assets/js/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="assets/js/materialize.js"></script>
+    <script type="text/javascript" src="assets/js/init.js"></script>
+    <link href="assets/css/custom.css" rel="stylesheet" type="text/css" />
+    <link href="assets/css/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection" />
+    <link href="assets/css/ghpages-materialize.css" type="text/css" rel="stylesheet" media="screen,projection" />
+    <link href="assets/css/style.css" type="text/css" rel="stylesheet" media="screen,projection" />
+    <link rel="stylesheet" type="text/css" href="assets/css/font-awesome.min.css" media="all" />
+    <script type="text/javascript" src="cordova.js"></script>
+    <script src="assets/js/jquery.dropdown.js"></script>
+    <style type="text/css">
+        .carousel {
+            max-height: 50px;
+        }
+
+        .carousel-item {
+            max-width: 60px;
+        }
+
+        body {
+            background-color: #fff;
+        }
+
+        .fa {
+            color: #e57373;
+        }
+    </style>
+    <script type="text/javascript">
+        // var webIP = 'http://192.168.1.22/jiwb/';  //Junaid Server
+        //var webIP = 'http://192.168.0.108/jiwb/'; //Hotel
+        // var webIP = 'http://192.168.1.25/jiwb/';    //Self
+        var UserName = localStorage.getItem("UserName");
+        var config;
+        var finaldate;
+        //var pairedDevices = document.getElementById('pairedHeading').value = "Paired Devices";
+
+        // pairedDevices.value = "Paired Devices";
+        $(function () {
+            // window.plugins.spinnerDialog.hide();
+            var currentTime = new Date();
+            var month = currentTime.getMonth() + 1;
+            var day = currentTime.getDate();
+            var year = currentTime.getFullYear();
+            finaldate = day + "/" + month + "/" + year;
+
+            $('#spnDate').text('Date: ' + finaldate);
+
+            $("#btnScan").click(function () {
+                // location.href = "index.html"
+            });
+            $("#lblUserName").text(UserName);
+            $('.carousel.carousel-slider').carousel({ full_width: true });
+            $("#btnLogout").click(function () {
+                $('#modal1').modal({});
+            });
+            $("#btnOut").click(function () {
+                location.href = "index.html";
+            });
+            $("#btnClose").click(function () {
+                $('#sidenav-overlay').trigger('click');
+            });
+            $("#lOut").click(function () {
+                $('#modal1').modal({});
+            });
+            $("#btnOpenBList").click(function () {
+                $('#bluetoothInfo').modal({});
+            });
+
+            DashboardGet_TotalConsumer_Billed_UnBilled('1');
+            setInterval(function () {
+                DashboardGet_TotalConsumer_Billed_UnBilled('1');
+
+            }, 300000);
+        });
+        document.addEventListener('deviceready', this.onDeviceReady, false);
+        function onDeviceReady() {
+            bluetoothSerial.enable();
+            //setInterval(function () {
+            // discoverUnpairedblutoothDevicesList();
+            discoverPairedblutoothDevicesList();
+            // }, 10000);
+            document.addEventListener("backbutton", function (e) {
+                e.preventDefault();
+            }, false);
+            //if ($('#deviceList').is(':empty')) {
+            //    //SpinnerDialog.show(null, "Wait bluetooth device search....");
+            //    SpinnerDialog.show("Wait...", "bluetooth device search....", true);
+            //}
+            //else {
+            //    SpinnerDialog.hide();
+            //}
+        }
+        function discoverPairedblutoothDevicesList() {
+
+            bluetoothSerial.list(function (devices) {
+                console.log('1');
+
+                devices.forEach(
+                    function (device) {
+                        //console.log('2');
+                        //currentNode = document.createElement('div');
+                        deviceIdforBT = device.id;
+                        //currentNode.id = device.id;
+                        //document.getElementById(device.id).innerHTML = '<div id="' + device.name + '" onclick="bluetoothSerial.connect(' + device.address + ', alert("Connecting to ' + device.name + '"), alert("Impossible to connect to ' + device.name + '"));">' + device.name + '</div></br>';
+                        //document.getElementById("devices_list").appendChild(currentNode);
+                        var listItem = document.createElement('tbody'), html = '<tr style="color:blue; margin-top:2px; font-size:larger;border-bottom:solid thin #ccc;" id="' + device.name + '" onclick="bluetoothSerialconnectDevice(\'' + device.address + '\');"> ' + device.name + '</tr></br>';
+                        //var listItem = document.createElement('li'), html = '<div style="color:blue; margin:30px; font-size:larger;" id="' + device.name + '" onclick="bluetoothSerial.connect(' + device.address + ',' + connectSuccess + ',' + connectFailure + ');">' + device.name + '</div></br>';
+                        // alert(device.id);
+                        listItem.innerHTML = html;
+                        listItem.dataset.deviceId = device.id;
+                        deviceListPired.appendChild(listItem);
+
+                    }
+
+                );
+
+            });
+        }
+
+        //function discoverUnpairedblutoothDevicesList() {
+        //    //  window.plugins.spinnerDialog.show();
+        //    bluetoothSerial.discoverUnpaired(
+        //        function (devices) {
+        //            console.log('1');
+        //            var currentNode;
+        //            devices.forEach(
+        //                function (device) {
+        //                    deviceIdforBT = device.id;
+        //                    //currentNode.id = device.id;
+        //                    //document.getElementById(device.id).innerHTML = '<div id="' + device.name + '" onclick="bluetoothSerial.connect(' + device.address + ', alert("Connecting to ' + device.name + '"), alert("Impossible to connect to ' + device.name + '"));">' + device.name + '</div></br>';
+        //                    //document.getElementById("devices_list").appendChild(currentNode);
+        //                    var listItem = document.createElement('tr'), html = '<td style="font-size:larger;" id="' + device.name + '" onclick="bluetoothSerialconnectDevice(\'' + device.address + '\');"> Click to connect: ' + device.name + '</td>';
+        //                    //var listItem = document.createElement('li'), html = '<div style="color:blue; margin:30px; font-size:larger;" id="' + device.name + '" onclick="bluetoothSerial.connect(' + device.address + ',' + connectSuccess + ',' + connectFailure + ');">' + device.name + '</div></br>';
+        //                    // alert(device.id);
+        //                    listItem.innerHTML = html;
+        //                    listItem.dataset.deviceId = device.id;
+        //                    deviceList.appendChild(listItem);
+
+        //                }
+
+        //            );
+        //            // window.plugins.spinnerDialog.hide();
+        //        }
+        //    );
+        //}
+
+        //function connectSuccess() {
+        //    navigator.notification.alert(
+        //        'Device Connected',  // message
+        //        connectFailure,         // callback
+        //        'Blutooth',            // title
+        //        'OK'                  // buttonName
+        //    );
+        //}
+        //function failure() {
+        //    //alert('Error while looking for BlueTooth devices');
+        //}
+        //function connectFailure() {
+        //    //alert('Error while looking for BlueTooth devices');
+        //}
+        //function bluetoothSerialconnectDevice(deviceAddress) {
+        //    localStorage.setItem('deviceAddress', deviceAddress)
+        //    bluetoothSerial.connect(deviceAddress, connectSuccess, connectFailure);
+        //}
+        //function MonthlyBilling() {
+        //    var _macID = localStorage.getItem('deviceAddress');
+        //    if (_macID == '') {
+        //        navigator.notification.alert(
+        //            'Connect device first',  // message
+        //            connectFailure,         // callback
+        //            'Blutooth',            // title
+        //            'OK'                  // buttonName
+        //        );
+        //    } else {
+        //        location.href = 'ConsumerBilling.html';
+        //    }
+
+        //}
+        function BillingStatus() {
+            location.href = 'BillingStatus.html';
+        }
+        function MonthlyBilling() {
+            location.href = 'ConsumerBilling.html';
+        }
+        function BillReport() {
+            location.href = 'ConsumerInformation.html';
+        }
+        //function ReportStatus() {
+        //    Location.href = 'BillingStatus.html';
+        //}
+
+        DashboardGet_TotalConsumer_Billed_UnBilled = function (pProjectId) {
+            // postData = { pProjectId: pProjectId };
+            $.ajax({
+                async: false,
+                type: "POST",
+                url: webIP + "JIWB_Service.asmx/DashboardGetConsumer",
+                data: JSON.stringify({ pProjectId: pProjectId }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (msg) {
+                    var obj = JSON.parse(msg.d);
+                    if (msg != null) {
+                        if (msg.d != null) {
+                            if (msg.d != '') {
+                                FillControls(msg);
+                            }
+                        }
+                    }
+                },
+                error: function (requestObject, error, errorThrown) {
+                }
+            });
+        }
+        FillControls = function (msg) {
+            var obj = JSON.parse(msg.d);
+            $("#spnTotalConsumer").text(obj[0].TotalConsumer);
+            $("#spnTotalBILLED").text(obj[0].BilledConsumer);
+            var unbilled = obj[0].TotalConsumer - obj[0].BilledConsumer;
+            $("#spnTotalUnbilled").text(unbilled);
+            $("#spnTotalMeterNotWorking").text(obj[0].DoorLockCount);
+            $("#spnTotalDoorLock").text(obj[0].MeterFaultyCount);
+        }
+
+    </script>
+
+</head>
+<body>
+    <form action="" id="form1">
+        <nav class="white" role="navigation" style="border-bottom: solid thin #ccc;">
+            <div class="container">
+
+                <a style="color:black; font-size:medium;" class="brand-logo">
+                    User Dashboard
+                </a>
+                <a data-target="modal1" id="btnLogout" style="color:black" class="right">
+                    <i class="fa fa-sign-out" style="margin-top:20px;"></i>
+                </a>
+
+                <ul class="right hide-on-med-and-down" style="display:none;">
+                    <li class="logo"><img alt="" src="#" /> </li>
+                    <li><img alt="" style="height:60px;" class="circle nav-wrapper" src="#" /></a></li>
+                    <li><a class="waves-effect waves-teal" style="color:black;" href="AlertList.html">Alert List</a></li>
+                    <li><a class="waves-effect waves-teal" style="color:black;" href="ChangeZone.html">Change Zones</a></li>
+                    <li><a class="waves-effect waves-teal" style="color:black;" href="ManualAlert.html">Manual Alert</a></li>
+                    <li><a class="waves-effect waves-teal" style="color:black;" href="MealLog.html">Meal Log</a></li>
+                    <li><a class="waves-effect waves-teal" style="color:black;" href="Break.html">Break</a></li>
+                    <li><a class="waves-effect waves-teal" style="color:black;" href="Performance.html">Performance</a></li>
+                    <li><a class="waves-effect waves-teal" style="color:black;" href="DownLog.html">Down Log?</a></li>
+                </ul>
+
+                <ul id="nav-mobile" class="side-nav white">
+                    <li>
+                        <div class="valign-wrapper col s12">
+
+                            <div style="margin-left:20px;" class="col s6">
+                                <span class="" style="color:black;">
+                                    Hello, <strong class="blue-text" id="lblUserName"></strong>
+                                </span>
+                            </div>
+                            <div class="col s2 " style="float:right; margin-left:100px;">
+                                <a id="btnClose" href="#" data-activates="" class="" style="color:black;">x</a>
+                            </div>
+                        </div>
+
+                    </li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="AlertList.html" style="color:black;"> <i class="large material-icons" style="color:black;">toc</i>Alert List</a></li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="ChangeZone.html" style="color:black;"><i class="large material-icons" style="color:black;">swap_horiz</i>Change Zones</a></li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="ManualAlert.html" style="color:black;"><i class="large material-icons" style="color:black;">library_add</i>Manual Alert</a></li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="MealLog.html" style="color:black;"><i class="large material-icons" style="color:black;">label_outline</i>Meal Log</a></li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="Break.html" style="color:black;"><i class="large material-icons" style="color:black;">pause</i>Break</a></li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="Performance.html" style="color:black;"><i class="large material-icons" style="color:black;">equalizer</i>Performance</a></li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="DownLog.html" style="color:black;"><i class="large material-icons" style="color:black;">trending_down</i>Down Log?</a></li>
+                    <div class="" style="padding-top:auto;">
+                        <li><a data-target="modal1" id="lOut" class="waves-effect waves-teal teal-text" href="#"><i class="fa fa-sign-out"></i>Log out</a></li>
+                    </div>
+                </ul>
+
+                <a href="#" data-activates="nav-mobile" class="button-collapse" style="color:black"><i class="fa fa-bars"></i></a>
+
+            </div>
+
+        </nav>
+
+        <style>
+            .fontTital {
+                font-size: 20px;
+                color: yellow;
+            }
+
+            .card .card-content {
+                padding: 4px !important;
+            }
+
+            td, th {
+                padding: 3px 3px;
+            }
+
+            #CardMonthly, #CardStatus {
+                border-radius: 10px;
+            }
+        </style>
+
+
+        <div class="row">
+            <div class="col s12 m12">
+               
+                <div class="col s6 m6">
+                    <div class="card z-depth-2  darken-1" id="CardMonthly" onclick="MonthlyBilling();">
+                        <div class="center" style="font-size:20px;color: #e57373;padding:10px;">
+                            <i class="fa fa-calendar"></i>
+                        </div>
+                        <div class="card-content">
+                            <center> <span class="black-text ">Monthly Billing</span><br /></center>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col s6 m6">
+                    <div class="card z-depth-2  darken-1" id="CardStatus" onclick="BillingStatus();">
+
+                        <div class="center" style="font-size:20px;color: #e57373;padding:10px;">
+                            <i class="fa fa-bar-chart"></i>
+                        </div>
+                        <div class="card-content">
+                            <center> <span class="black-text ">Billing Status</span><br /></center>
+                        </div>
+
+                    </div>
+                </div>
+                <!--<div class="col s6 m6">
+        <div class="card z-depth-2  darken-1" onclick="BillingStatus();">
+
+            <div class="center" style="font-size:20px;color: #e57373;padding:10px;">
+                <i class="fa fa-search "></i>
+            </div>
+            <div class="card-content">
+                <center> <span class="black-text ">Find Consumer Info</span><br /></center>
+            </div>
+
+        </div>
+    </div>-->
+                <!--<div class="col s6 m6">
+        <div class="card z-depth-2  darken-1" onclick="MonthlyBilling();">
+            <div class="center" style="font-size:20px;color: #e57373;padding:10px;">
+                <i class="fa fa-line-chart"></i>
+            </div>
+            <div class="card-content">
+                <center> <span class="black-text ">Report</span><br /></center>
+            </div>
+        </div>
+
+    </div>-->
+
+            </div>
+         </div>
+        <span id="spnDate"></span>
+        <center> <span class="black-text "></span><br />Your Work Summary</center>
+        <div class="row">
+            <div class="col s12 m6">
+                    <div class="card horizontal">
+                        <div class="card-stacked">
+                            <div class="card-content blue-grey">
+                                <center> <span class="white-text" id="spnTotalConsumer"></span></center>
+                            </div>
+                            <div class="card-action">
+                                <center> <label class="black-text">Total Consumers</label></center>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col s12 m12">
+                <div class="col s6 m6">
+                    <div class="card horizontal">
+                        <div class="card-stacked">
+                            <div class="card-content blue-grey">
+                                <center> <span class="white-text" id="spnTotalBILLED"></span></center>
+                            </div>
+                            <div class="card-action">
+                                <center> <label class="black-text">Billed</label></center>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col s6 m6">
+                    <div class="card horizontal">
+                        <div class="card-stacked">
+                            <div class="card-content blue-grey">
+                                <center> <span class="white-text" id="spnTotalUnbilled"></span></center>
+                            </div>
+                            <div class="card-action">
+                                <center> <label class="black-text">UnBilled</label></center>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col s12 m12">
+                <div class="col s6 m6">
+                    <div class="card horizontal">
+                        <div class="card-stacked">
+                            <div class="card-content blue-grey">
+                                <center> <span class="white-text" id="spnTotalDoorLock"></span></center>
+                            </div>
+                            <div class="card-action">
+                                <center> <label class="black-text">DoorLock</label></center>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col s6 m6">
+                    <div class="card horizontal">
+                        <div class="card-stacked">
+                            <div class="card-content blue-grey">
+                                <center> <span class="white-text" id="spnTotalMeterNotWorking"></span></center>
+                            </div>
+                            <div class="card-action">
+                                <center> <label class="black-text">NotWorking</label></center>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--<div class="row" style="display:none;">
+
+            <div class="card z-depth-2  darken-1">
+                <span id="spnDate"></span>
+                <div class="card-content">
+                    <center> <span class="black-text "></span><br />Your Work Summary</center>
+                </div>
+                <div class="center" style="font-size:15px;color: black;padding:10px;">
+                    <table class="table striped">
+                        <tbody>
+                            <tr>
+                                <th>Description</th>
+                                <th style="text-align:center">Value </th>
+
+                            </tr>
+                            <tr>
+                                <td>Total No. of Consumers </td>
+                                <td style="text-align:center;color:blue "><span class="blue-black" id="spnTotalConsumer"></span></td>
+
+                            </tr>
+                            <tr>
+                                <td>Total Billed Consumers</td>
+                                <td style="text-align:center ;color:green"><span class="blue-black" id="spnTotalBILLED"></span></td>
+
+                            </tr>
+                            <tr>
+                                <td>Total UnBilled Consumers</td>
+                                <td style="text-align:center ;color:red"><span class="blue-black" id="spnTotalUnbilled"></span></td>
+
+                            </tr>
+                            <tr>
+                                <td>Total Door Lock Case</td>
+                                <td style="text-align:center" id="spnTotalDoorLock">10000</td>
+                            </tr>
+                            <tr>
+                                <td>Total Meter Not Working Case</td>
+                                <td style="text-align:center" id="spnTotalMeterNotWorking">5000 </td>
+                            </tr>
+
+
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+        </div>-->
+
+        <!--<div class="col s12">
+            <table id="deviceListPired" style="">
+                <em id="pairedHeading" style="color:green;">Paired Deveice</em>
+            </table>
+
+        </div>-->
+        <!--<div class="input-field col s12">
+            <button id="btnSearchBL" onclick="discoverUnpairedblutoothDevicesList();" style="margin-bottom:0px;" class="btn waves-effect waves-light col s12 blue darken-1 waves-orange" type="button" name="action">Search New Devices</button>
+
+        </div>
+        <div class="col s12 m12">
+            <ul id="deviceList" style=""></ul>
+
+        </div>-->
+        <!-- Modal Structure -->
+        <div id="modal1" class="modal">
+            <div class="modal-content">
+                <span><i class="fa fa-exclamation-triangle yellow-text left" style="font-size:medium;"></i></span>
+                <span class="teal-text">Are you sure to logout?</span>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class=" modal-action teal white-text modal-close waves-effect waves-green btn-flat">No</a>
+                <a href="#!" id="btnOut" class=" modal-action red white-text modal-close  waves-effect waves-green btn-flat left">Yes</a>
+            </div>
+        </div>
+
+        <!--<div id="bluetoothInfo" class="modal">
+            <div class="modal-content">
+                <span><i class="fa fa-exclamation-triangle yellow-text left" style="font-size:medium;"></i></span>
+                <div id="mainPage">
+                    <ul id="deviceList"></ul>
+                    <button id="refreshButton" class="styled-button-9">Get Your Bluetooth Devices</button>
+                </div>
+                <div id="detailPage">
+                    <div id="resultDiv"></div>
+                </div>
+                <div id="statusDiv"></div>
+            </div>
+
+        </div>-->
+        </div>
+    </form>
+</body>
+</html>

@@ -1,0 +1,986 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" />
+    <title></title>
+    <!-- CSS  -->
+    <script type="text/javascript" src="assets/js/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="assets/js/materialize.js"></script>
+    <script type="text/javascript" src="assets/js/init.js"></script>
+    <link href="assets/css/custom.css" rel="stylesheet" type="text/css" />
+    <link href="assets/css/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection" />
+    <link href="assets/css/ghpages-materialize.css" type="text/css" rel="stylesheet" media="screen,projection" />
+    <link href="assets/css/style.css" type="text/css" rel="stylesheet" media="screen,projection" />
+    <link rel="stylesheet" type="text/css" href="assets/css/font-awesome.min.css" media="all" />
+    <script src="assets/js/jquery.dropdown.js"></script>
+    <style type="text/css">
+        .fontTital {
+            font-size: 20px;
+            color: yellow;
+        }
+
+        .card .card-content {
+            padding: 4px !important;
+        }
+
+        #toast-container {
+            background-color: #F44336 !important;
+        }
+
+        .toast {
+            background-color: #F44336 !important;
+            font-size: small;
+        }
+
+        .fontTital {
+            font-size: 20px;
+            color: yellow;
+        }
+
+        .card .card-content {
+            padding: 4px !important;
+        }
+
+        .carousel {
+            max-height: 50px;
+        }
+
+        .carousel-item {
+            max-width: 60px;
+        }
+
+        S.row {
+            margin-bottom: 0px;
+        }
+
+        input:not([type]), input[type=text], input[type=password], input[type=email], input[type=url], input[type=time], input[type=date], input[type=datetime], input[type=datetime-local], input[type=tel], input[type=number], input[type=search], textarea.materialize-textarea {
+            margin: 0 0 0 0 !important;
+            border-bottom: 1px solid #0089ec;
+        }
+
+            input:not([type]).valid, input:not([type]):focus.valid, input[type=text].valid, input[type=text]:focus.valid, input[type=password].valid, input[type=password]:focus.valid, input[type=email].valid, input[type=email]:focus.valid, input[type=url].valid, input[type=url]:focus.valid, input[type=time].valid, input[type=time]:focus.valid, input[type=date].valid, input[type=date]:focus.valid, input[type=datetime].valid, input[type=datetime]:focus.valid, input[type=datetime-local].valid, input[type=datetime-local]:focus.valid, input[type=tel].valid, input[type=tel]:focus.valid, input[type=number].valid, input[type=number]:focus.valid, input[type=search].valid, input[type=search]:focus.valid, textarea.materialize-textarea.valid, textarea.materialize-textarea:focus.valid {
+                border-bottom: 1px solid #0089ec;
+                box-shadow: 0 1px 0 0 #0089ec;
+            }
+
+        [type="checkbox"] + label:before, [type="checkbox"]:not(.filled-in) + label:after {
+            border: 2px solid #0089ec;
+        }
+
+        [type="checkbox"]:checked + label:before {
+            border-right: 2px solid #0089ec;
+            border-bottom: 2px solid #0089ec;
+        }
+
+        .tabs.tabs-transparent .indicator {
+            background-color: #0089ec;
+        }
+
+        td, th {
+            padding: 3px 3px;
+        }
+
+        select.browser-default {
+            font-size: 12px;
+        }
+
+        .tabs.tabs-transparent .tab a, .tabs.tabs-transparent .tab.disabled a, .tabs.tabs-transparent .tab.disabled a:hover {
+            color: rgba(255,255,255,0.7);
+            font-size: 11px;
+        }
+
+        [type="checkbox"] + label {
+            padding-left: 20px;
+            line-height: 25px;
+            font-size: 0.9rem;
+        }
+
+        body {
+            background-color: #fff;
+        }
+        #DCBReportDetail td {
+            border: solid thin #ccc;
+        }
+    </style>
+    <script type="text/javascript">
+        var UserName = localStorage.getItem("UserName");
+        var pUserId = '';
+        var pUserRole = '';
+        var pIsActive = true;
+        var pDemand;
+        var pCollected;
+        var pPending;
+        $(function () {
+            $("#lblUserName").text(UserName);
+            $('#ddlCategory').dropdown({ pAction: 3, pLookUpId: 0, pLookUpType: 0, pSelectionType: 0 });
+            $('#ddlZone').dropdown({ pAction: 2, pLookUpId: 0, pLookUpType: 0, pSelectionType: 0 });
+            $('#ddlSubZone').dropdown({ pAction: 1, pLookUpId: 0, pLookUpType: 0, pSelectionType: 0 });
+
+            //$("#selectzone").change(function () {
+            //    pUserId = $(this).children("option:selected").val();
+            //});
+            // window.plugins.spinnerDialog.hide();
+
+            $('#btnLogin').hide();
+            $('.carousel.carousel-slider').carousel({ full_width: true });
+            $("#btnLogout").click(function () {
+                $('#modal1').modal({});
+            });
+            $("#btnOut").click(function () {
+                location.href = "index.html";
+            });
+            $("#btnClose").click(function () {
+                $('#sidenav-overlay').trigger('click');
+            });
+            $("#lOut").click(function () {
+                $('#modal1').modal({});
+            });
+            // prc_device_get_user_roles(0, 0);
+            $("#selectzone").change(function () {
+                if ($(this).val() > "0") {
+                    $("#divCheck").fadeIn(200);
+
+                    $('#btnLogin').show('slow');
+                } else {
+                    $("#divCheck").hide();
+                }
+            });
+            $('#btnLogin').click(function () {
+                var count = 0;
+                var error = "";
+                var errorcount = 0;
+                $("input[type='checkbox']:checked").each(function () {
+                    count = 1;
+                });
+                if (count == 0) {
+                    Materialize.toast('Please Select Roll', 4000);
+                    $("#lblLogError").html(error);
+                }
+            });
+            $('#test5').click(function (e) {
+                var table = $(e.target).closest('table');
+                $('td input:checkbox', table).prop('checked', this.checked);
+            });
+            $('input.example').on('change', function () {
+                $('input.example').not(this).prop('checked', false);
+                pUserRole = ($(this).attr('id'));
+            });
+
+            //Dashboard Binding Method call
+            DashboardGet_TotalConsumer_Billed_UnBilled('1');
+            DashboardGetDemand('1');
+            setInterval(function () {
+                DashboardGet_TotalConsumer_Billed_UnBilled('1');
+                DashboardGetDemand('1');
+
+            }, 300000);
+
+            $("#btnSubmitDCB").click(function e() {
+                  
+                pMonth = $("#ddlMonth").val();
+                pYear = $("#ddlYear").val();
+                pCategory = $("#ddlZoneCategory").val();
+                if (pCategory == '1') {
+                    $("#DCBReportDetail").show();
+                    $("#DCBReportCategorywise").hide();
+                    MobBillingDashboard(pYear, pMonth, pCategory);
+                }
+                else if (pCategory == '2') {
+                    $("#DCBReportDetail").hide();
+                    $("#DCBReportCategorywise").show();
+                    MobBillingDashboard(pYear, pMonth, pCategory);
+                }
+                else { }
+
+                
+            });
+
+        });
+
+        //prc_device_get_user_roles = function (pAction, pLookUpId) {
+        //    postData = { pAction: pAction, pLookUpId: pLookUpId };
+        //    $.ajax({
+        //        async: false,
+        //        type: "POST",
+        //        url: webIP + "MobileMethod.aspx/prc_device_get_user_roles",
+        //        data: JSON.stringify({ "dbParameters": postData }),
+        //        contentType: "application/json; charset=utf-8",
+        //        dataType: "json",
+        //        success: function (msg) {
+        //            if (msg != null) {
+        //                if (msg.d != null) {
+        //                    if (msg.d != '') {
+        //                        var obj = JSON.parse(msg.d);
+
+        //                        var count = 0;
+        //                        var row = '';
+        //                        if (obj.length > 0) {
+
+        //                            $.each(obj, function (i, d) {
+        //                                row += '<tr>';
+        //                                row += '<td>';
+        //                                //row += '<input type="checkbox" id="chk-' + d.RoleID + '" value="' + d.Role + '" class="example" />';
+        //                                //row += '<label for="chk-' + d.RoleID + '" style="color:#000"></label>';
+        //                                row += '<td><input type="checkbox" class="example" id="' + d.RoleID + '" value="' + d.RoleID + '"/><label for="' + d.RoleID + '"> &nbsp; ' + d.Role + '</label></td>';
+        //                                row += '</td>';
+        //                                row += '</tr>';
+        //                                count++;
+
+        //                            });
+        //                            $("#tblRoles").append(row);
+        //                        }
+        //                    }
+        //                    else {
+
+        //                    }
+        //                }
+        //            }
+        //        },
+        //        error: function (requestObject, error, errorThrown) {
+
+        //        }
+        //    });
+        //}
+        //prc_user_creation_role_set = function (pUserId, pUserRole, pIsActive) {
+
+        //    postData = {
+        //        pUserId: pUserId, pUserRole: pUserRole, pIsActive: pIsActive
+        //    };
+        //    $.ajax({
+        //        async: false,
+        //        type: "POST",
+        //        url: webIP + "MobileMethod.aspx/prc_user_creation_role_set",
+        //        data: JSON.stringify({ "dbParameters": postData }),
+        //        contentType: "application/json; charset=utf-8",
+        //        dataType: "json",
+        //        success: function (msg) {
+        //            var obj = JSON.parse(msg.d);
+        //            location.href = "AdminDashboard.html";
+        //            // $('#tbdashboard').addClass('active');
+
+        //        },
+        //        error: function (requestObject, error, errorThrown) {
+        //        }
+        //    });
+        //}
+        //function roleSetbyAdmin() {
+        //    prc_user_creation_role_set(pUserId, pUserRole, pIsActive);
+
+        //}
+
+        //dashboard Binding
+        DashboardGet_TotalConsumer_Billed_UnBilled = function (pProjectId) {
+            // postData = { pProjectId: pProjectId };
+            $.ajax({
+                async: false,
+                type: "POST",
+                url: webIP + "JIWB_Service.asmx/DashboardGetConsumer",
+                data: JSON.stringify({ pProjectId: pProjectId }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (msg) {
+                    var obj = JSON.parse(msg.d);
+                    if (msg != null) {
+                        if (msg.d != null) {
+                            if (msg.d != '') {
+                                FillControls(msg);
+                            }
+                        }
+                    }
+                },
+                error: function (requestObject, error, errorThrown) {
+
+                }
+            });
+        }
+        FillControls = function (msg) {
+            var obj = JSON.parse(msg.d);
+            $("#spnTotalConsumer").text(obj[0].TotalConsumer);
+            $("#spnTotalBILLED").text(obj[0].BilledConsumer);
+            var unbilled = obj[0].TotalConsumer - obj[0].BilledConsumer
+            $("#spnTotalUnbilled").text(unbilled);
+        }
+        DashboardGetDemand = function (pProjectId) {
+            // postData = { pProjectId: pProjectId };
+            $.ajax({
+                async: false,
+                type: "POST",
+                url: webIP + "JIWB_Service.asmx/DashboardGetDemand",
+                data: JSON.stringify({ pProjectId: pProjectId }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (msg) {
+                    var obj = JSON.parse(msg.d);
+                    if (msg != null) {
+                        if (msg.d != null) {
+                            if (msg.d != '') {
+                                $("#spnCollectonDemand").text(obj[0].Deamand);
+                                $("#spnCollectedCollection").text(obj[0].Collection);
+                                $("#spnPendingCollection").text(obj[0].Balance);
+                            }
+                        }
+                    }
+                },
+                error: function (requestObject, error, errorThrown) {
+
+                }
+            });
+        }
+        MobBillingDashboard = function (pYear, pMonth, pCategory) {
+           // postData = { pYear: pYear, pMonth: pMonth, pCategory: pCategory };
+            $.ajax({
+                async: false,
+                type: "POST",
+                url: webIP + "JIWB_Service.asmx/MobBillingDashboard",
+                data: JSON.stringify({ pYear: pYear, pMonth: pMonth, pCategory: pCategory }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (msg) {
+                    var obj = JSON.parse(msg.d);
+                    alert();
+                    if (obj.length > 0) {
+
+                        if (pCategory == '1') {
+                            FillGrid(msg);
+                        }
+                        else if (pCategory == '2') {
+                            FillGridCategory(msg);
+                        }
+                    }
+                    else {
+                        $('.error').text('Invalid Field');
+                    }
+                },
+                error: function (requestObject, error, errorThrown) {
+
+                }
+            });
+        }
+
+        FillGrid = function (msg) {
+            var obj = JSON.parse(msg.d);
+            if (obj.length > 0) {
+                $.each(obj, function (i, d) {
+                    row += '<tr>';
+                    row += '<td>' + d.ZoneName + '</td>';
+                    row += '<td>' + d.TotalConsumerCount + '</td>';
+                    row += '<td>' + d.BilledCount + '</td>';
+                    row += '<td>' + d.Deamand + '</td>'; 
+                    row += '<td>' + d.Collections + '</td>';
+                    row += '<td>' + d.Balance + '</td>';
+                    row += '</tr>';
+                    count++;
+                });
+                $("#dvGridDCBZonewise").html(row);
+                $('#dvGridEntries').html(count);
+                $('.page-size').val($('#ddlNoOfRecords').val());
+                $('.filter-table').footable('footable_redrawn').data("page-size", $(".page-size option:selected").text()).trigger("footable_initialized");
+            } else {
+                var error = '<li>' + count + ' records found</li>';
+                $('#ErrorMessage').html(error)
+                if (count == 0) {
+                    $("#dvGridDCBZonewise").empty();
+                    $("#ErrorMessage").empty();
+                }
+            }
+        }
+
+        FillGridCategory = function (msg) {
+            var obj = JSON.parse(msg.d);
+           
+            if (obj.length > 0) {
+                $.each(obj, function (i, d) {
+                    var TotalDemandPaid = d.TotalLateFeePaid + d.TotalArrearPaid + d.TotalWaterChargesPaid;
+                    var TotalCollection = TotalDemandPaid + d.TotalAdvancePayments;
+                    var TotalBalance = d.Deamand - TotalDemandPaid;
+                    var adpay = 0;
+                    row += '<tr>';
+                    row += '<td>' + d.ConsumerType + '</td>';
+                    row += '<td>' + d.TotalConsumerCount + '</td>';
+                    row += '<td>' + d.BilledCount + '</td>';
+                    
+                    row += '<td>' + d.Deamand + '</td>';
+                    row += '<td>' + d.Collections + '</td>';
+                    row += '<td>' + d.Balance + '</td>';
+                    row += '</tr>';
+                    count++;
+                });
+                $("#dvGrid").html(row);
+                $('#dvGridEntries').html(count);
+                $('.page-size').val($('#ddlNoOfRecords').val());
+                $('.filter-table').footable('footable_redrawn').data("page-size", $(".page-size option:selected").text()).trigger("footable_initialized");
+            } else {
+                var error = '<li>' + count + ' records found</li>';
+                $('#ErrorMessage').html(error)
+                if (count == 0) {
+                    $("#dvGrid").empty();
+                    $("#ErrorMessage").empty();
+                }
+            }
+        }
+
+    </script>
+
+</head>
+<body>
+    <form action="" id="form1">
+        <nav class="white" role="navigation" style="border-bottom: solid thin #ccc;">
+            <div class="container">
+
+                <a style="color:black; font-size:medium;" class="brand-logo">
+                    Admin Dashboard
+                </a>
+                <a data-target="modal1" id="btnLogout" style="color:black" class="right">
+                    <i class="fa fa-sign-out" style="margin-top:22px;margin-bottom:-22px;"></i>
+                </a>
+
+                <ul class="right hide-on-med-and-down" style="display:none;">
+                    <li class="logo"><img alt="" src="" width="40px" height="40px" /> </li>
+                    <!--<li><img alt="" style="height:60px;" class="circle nav-wrapper" src="assets/images/profile-img.jpg" /></a></li>-->
+                    <li><a class="waves-effect waves-teal" style="color:black;" href="AlertList.html">Alert List</a></li>
+                    <li><a class="waves-effect waves-teal" style="color:black;" href="ChangeZone.html">Change Zones</a></li>
+                    <li><a class="waves-effect waves-teal" style="color:black;" href="ManualAlert.html">Manual Alert</a></li>
+                    <li><a class="waves-effect waves-teal" style="color:black;" href="MealLog.html">Meal Log</a></li>
+                    <li><a class="waves-effect waves-teal" style="color:black;" href="Break.html">Break</a></li>
+                    <li><a class="waves-effect waves-teal" style="color:black;" href="Performance.html">Performance</a></li>
+                    <li><a class="waves-effect waves-teal" style="color:black;" href="DownLog.html">Down Log?</a></li>
+                </ul>
+
+                <ul id="nav-mobile" class="side-nav white">
+                    <li>
+                        <div class="valign-wrapper col s12">
+
+                            <div style="margin-left:20px;" class="col s6">
+                                <span class="" style="color:black;">
+                                    Hello, <strong class="blue-text" id="lblUserName"></strong>
+                                </span>
+                            </div>
+                            <div class="col s2" style="float:right; margin-left:50px;">
+                                <a id="btnClose" href="#" data-activates="" class="" style="color:black;">x</a>
+                            </div>
+                        </div>
+
+                    </li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="AlertList.html" style="color:black;"> <i class="large material-icons" style="color:black;">toc</i>Alert List</a></li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="ChangeZone.html" style="color:black;"><i class="large material-icons" style="color:black;">swap_horiz</i>Change Zones</a></li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="ManualAlert.html" style="color:black;"><i class="large material-icons" style="color:black;">library_add</i>Manual Alert</a></li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="MealLog.html" style="color:black;"><i class="large material-icons" style="color:black;">label_outline</i>Meal Log</a></li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="Break.html" style="color:black;"><i class="large material-icons" style="color:black;">pause</i>Break</a></li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="Performance.html" style="color:black;"><i class="large material-icons" style="color:black;">equalizer</i>Performance</a></li>
+                    <li style="display:none;"><a class="waves-effect waves-orange" href="DownLog.html" style="color:black;"><i class="large material-icons" style="color:black;">trending_down</i>Down Log?</a></li>
+                    <div class="" style="padding-top:auto;">
+                        <li><a data-target="modal1" id="lOut" class="waves-effect waves-teal teal-text" href="#"><i class="fa fa-sign-out"></i>Log out</a></li>
+                    </div>
+                </ul>
+
+                <a href="#" data-activates="nav-mobile" class="button-collapse" style="color:black"><i class="fa fa-bars"></i></a>
+
+            </div>
+
+        </nav>
+        <nav class="nav-extended white">
+            <div class="nav-wrapper ">
+
+                <ul class="tabs tabs-transparent" style="color:black;border-bottom:solid thin #ccc;">
+                    <li class="tab " id="tbdashboard"><a href="#tabBillingSummary" class="active" style="color:black;" class="">Billing </a></li>
+                    <li class="tab " id="tbdashboard1"><a style="color:black;" href="#tabAdmistrativeSummary">Admistrative</a></li>
+                    <li class="tab " id="tbdashboard2"><a style="color:black;" href="#tabGrievanceSummary">Grievance</a></li>
+                    <li class="tab " id="tbdashboard3"><a style="color:black;" href="#tabWaterConsumptionSummary">Water Audit </a></li>
+                    <div class="indicator" style="right: 157px; left: 0px;"></div>
+                </ul>
+            </div>
+        </nav>
+        <div class="row" id="tabBillingSummary" style=" background-color:white; margin-top:20px">
+            <div class="col s4">
+                <select class="browser-default" id="ddlMonth" style="color:black;border-bottom:solid thin #0089ec ;">
+                    <option value="0">Select Month</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                </select>
+            </div>
+            <div class="col s4">
+                <select class="browser-default" id="ddlYear" style="color:black;border-bottom:solid thin #0089ec ;">
+                    <option value="0">Select Year</option>
+                    <option value="2018">2018</option>
+                    <option value="2019">2019</option>
+                    <option value="2020">2020</option>
+                    <option value="2021">2021</option>
+                    <option value="2022">2022</option>
+                    <option value="2023">2023</option>
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>
+                </select>
+            </div>
+            <div class="col s4">
+                <select class="browser-default" id="ddlZoneCategory" style="color:black;border-bottom:solid thin #0089ec ;">
+                    <option value="0">Select </option>
+                    <option value="1">ZoneWise</option>
+                    <option value="2">TarrifWise</option>
+
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s6">
+                <a id="btnCancel" style="margin-top:10px;" class="btn right white-text  btn-flat waves-effect waves-light  blue darken-1 waves-orange " name="action">Clear</a>
+            </div>
+            <div class="input-field col s6">
+                <a id="btnSubmitDCB" style="margin-top:10px;" class="btn left white-text btn-flat waves-effect waves-light  blue darken-1 waves-orange" name="action">Submit </a>
+            </div>
+        </div>
+        <div class="" style="margin-top:10px;">
+            <center>
+                <span style="font-size:larger;" class="blue-text"> <b>Billing Summary</b></span>
+            </center>
+        </div>
+        <!--<div class="row col s12">
+
+        <div class="col s6 m6">
+            <div class="card horizontal">
+                <div class="card-stacked">
+                    <div class="card-content teal">
+                        <center> <span class="blue-black" id="spnTotalConsumer"></span></center>
+                    </div>
+                    <div class="card-action">
+                        <center> <label class="blue-text">Total Consumers</label></center>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col s6 m6">
+            <div class="card horizontal">
+                <div class="card-stacked">
+                    <div class="card-content teal">
+                        <center>Rs.<span class="blue-black" id="spnCollectonDemand"></span></center>
+                    </div>
+                    <div class="card-action">
+                        <center><label class="blue-text">Total Demand</label></center>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row col s12">
+        <div class="col s6 m6">
+            <div class="card horizontal">
+                <div class="card-stacked">
+                    <div class="card-content teal">
+                        <center><span class="blue-black" id="spnTotalBILLED"></span></center>
+                    </div>
+                    <div class="card-action">
+                        <center><label class="blue-text">Billed Consumers</label></center>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col s6 m6">
+            <div class="card horizontal">
+                <div class="card-stacked">
+                    <div class="card-content teal">
+                        <center>Rs.<span class="blue-black" id="spnCollectedCollection"></span></center>
+                    </div>
+                    <div class="card-action">
+                        <center><label class="blue-text">Total Collection</label></center>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row col s12">
+        <div class="col s6 m6">
+            <div class="card horizontal">
+                <div class="card-stacked">
+                    <div class="card-content teal">
+                        <center><span class="blue-black" id="spnTotalUnbilled"></span></center>
+                    </div>
+                    <div class="card-action">
+                        <center><label class="blue-text">Unbilled Consumers</label></center>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col s6 m6">
+            <div class="card horizontal">
+                <div class="card-stacked">
+                    <div class="card-content teal ">
+                        <center>Rs.<span class="blue-black" id="spnPendingCollection"></span></center>
+                    </div>
+                    <div class="card-action">
+                        <center><label class="blue-text">Total Balance</label></center>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>-->
+
+        <div class="" style="height: 50vh; overflow-x: auto; overflow-y: auto; margin: 4px 0; clear: both; border: 1px solid #cccccc; background: #fff;">
+            <table id="DCBReportDetail" class="table table-bordered table-hover filter-table" data-filter="#filter-input" data-page-size="10"
+                   data-page-navigation="#dvGridPaging" data-limit-navigation="2">
+                <thead>
+                    <tr>
+                        <th>Zone</th>
+                        <th>Consumers</th>
+                        <th>Billed </th>
+                        <th>UnBilled </th>
+                        <th>Demand</th>
+                        <th>Collection</th>
+                        <th>Balance</th>
+                    </tr>
+                    <!--<tr>
+                    <td style="text-align:center"><span id="spnTotalConsumer"></span></td>
+                </tr>
+                <tr>
+                    <td style="text-align:center"><span id="spnTotalBILLED"></span></td>
+                </tr>
+                <tr>
+                    <td style="text-align:center"><span id="spnTotalUnbilled"></span></td>
+                </tr>
+                <tr>
+                    <td style="text-align:center"><span id="spnCollectonDemand"></span></td>
+                </tr>
+                <tr>
+                    <td style="text-align:center"><span id="spnCollectedCollection"></span> </td>
+                </tr>
+                <tr>
+                    <td style="text-align:center"><span id="spnPendingCollection"></span> </td>
+
+                </tr>-->
+                    <!--<tr>
+                    <td>Total Arriears Collection</td>
+                    <td style="text-align:center">5000 </td>
+
+                </tr>
+                <tr>
+                    <td>Total Interest on Arriears Collection</td>
+                    <td style="text-align:center">5000 </td>
+
+                </tr>
+                <tr>
+                    <td>Total Penalty Collection</td>
+                    <td style="text-align:center">5000 </td>
+
+                </tr>-->
+
+                </thead>
+                <tbody id="dvGridDCBZonewise"></tbody>
+            </table>
+        </div>
+        <div class="" style="display: none; height: 50vh; overflow-x: auto; overflow-y: auto; margin: 4px 0; clear: both; border: 1px solid #cccccc; background: #fff;">
+            <table id="DCBReportCategorywise" class="table table-bordered table-hover filter-table" data-filter="#filter-input" data-page-size="10"
+                   data-page-navigation="#dvGridPaging" data-limit-navigation="2">
+                <thead>
+                    <tr>
+                        <th>Tarrif</th>
+                        <th>Consumers</th>
+                        <th>Billed </th>
+                        <th>UnBilled </th>
+                        <th>Demand</th>
+                        <th>Collection</th>
+                        <th>Balance</th>
+                    </tr>
+                    <!--<tr>
+                    <td style="text-align:center"><span id="spnTotalConsumer"></span></td>
+                </tr>
+                <tr>
+                    <td style="text-align:center"><span id="spnTotalBILLED"></span></td>
+                </tr>
+                <tr>
+                    <td style="text-align:center"><span id="spnTotalUnbilled"></span></td>
+                </tr>
+                <tr>
+                    <td style="text-align:center"><span id="spnCollectonDemand"></span></td>
+                </tr>
+                <tr>
+                    <td style="text-align:center"><span id="spnCollectedCollection"></span> </td>
+                </tr>
+                <tr>
+                    <td style="text-align:center"><span id="spnPendingCollection"></span> </td>
+
+                </tr>-->
+                    <!--<tr>
+                    <td>Total Arriears Collection</td>
+                    <td style="text-align:center">5000 </td>
+
+                </tr>
+                <tr>
+                    <td>Total Interest on Arriears Collection</td>
+                    <td style="text-align:center">5000 </td>
+
+                </tr>
+                <tr>
+                    <td>Total Penalty Collection</td>
+                    <td style="text-align:center">5000 </td>
+
+                </tr>-->
+
+                </thead>
+                <tbody id="dvGrid"></tbody>
+            </table>
+        </div>
+        <div class="row" id="tabAdmistrativeSummary" style="margin-top:20px;">
+            <div class="col s4">
+                <select class="browser-default" id="selectcategory" style="color:black;border-bottom:solid thin #0089ec ;">
+                    <option value="0">Category Wise</option>
+                </select>
+            </div>
+            <div class="col s4">
+                <select class="browser-default" id="selectzone" style="color:black;border-bottom:solid thin #0089ec ;">
+                    <option value="0">Zone Wise</option>
+
+                </select>
+            </div>
+
+            <div class="col s4">
+                <select class="browser-default" id="selectsubzone" style="color:black;border-bottom:solid thin #0089ec ;">
+                    <option value="0">Sub-Zone Wise</option>
+
+                </select>
+            </div>
+            <div class="row">
+                <div class="input-field col s6">
+                    <button id="btnCancel" style="margin-bottom:15px;" class="btn waves-effect waves-light col s12 blue darken-1 waves-orange" type="button" name="action"> Clear Filter</button>
+                </div>
+                <div class="input-field col s6">
+                    <button id="btnSubmit" style="margin-bottom:15px;" class="btn waves-effect waves-light col s12 blue darken-1 waves-orange" type="button" name="action">Submit </button>
+                </div>
+            </div>
+            <div class="row col s12">
+                <center>
+                    <h5 class="blue-text"> <b>Administrative Summary</b></h5>
+                </center>
+                <table class="table striped">
+                    <tr>
+                        <th>Description</th>
+
+                        <th style="text-align:center">Value </th>
+
+                    </tr>
+
+                    <tr>
+                        <td>Total No. of Active Connection</td>
+                        <td style="text-align:center">4231</td>
+
+                    </tr>
+
+                    <tr>
+                        <td>Total No. of  Disconnection Request</td>
+                        <td style="text-align:center">5239</td>
+
+                    </tr>
+                    <tr>
+                        <td>Total No. of Reconnection Request</td>
+                        <td style="text-align:center">4231</td>
+
+                    </tr>
+                    <tr>
+                        <td>Total No. of Door lock Case Found</td>
+                        <td style="text-align:center">10000</td>
+
+                    </tr>
+                    <tr>
+                        <td>Total No. of Meter Damages</td>
+                        <td style="text-align:center">5000 </td>
+
+                    </tr>
+                    <tr>
+                        <td>Total No. of MR Registered</td>
+                        <td style="text-align:center">5000 </td>
+
+                    </tr>
+                    <tr>
+                        <td>Total No. of Engineer Registered</td>
+                        <td style="text-align:center">5000 </td>
+
+                    </tr>
+                    <tr>
+                        <td>Total No. of Maintenance Engineer Registered</td>
+                        <td style="text-align:center">5000 </td>
+
+                    </tr>
+
+                </table>
+            </div>
+        </div>
+        <div class="row" id="tabGrievanceSummary" style="margin-top:20px;">
+            <div class="col s4">
+                <select class="browser-default" id="selectcategory" style="color:black;border-bottom:solid thin #0089ec ;">
+                    <option value="0">Category Wise</option>
+                </select>
+            </div>
+            <div class="col s4">
+                <select class="browser-default" id="selectzone" style="color:black;border-bottom:solid thin #0089ec ;">
+                    <option value="0">Zone Wise</option>
+                </select>
+            </div>
+            <div class="col s4">
+                <select class="browser-default" id="selectsubzone" style="color:black;border-bottom:solid thin #0089ec ;">
+                    <option value="0">Sub-Zone Wise</option>
+                </select>
+            </div>
+            <div class="row">
+                <div class="input-field col s6">
+                    <button id="btnCancel" style="margin-bottom:15px;" class="btn waves-effect waves-light col s12 blue darken-1 waves-orange" type="button" name="action"> Clear Filter</button>
+                </div>
+                <div class="input-field col s6">
+                    <button id="btnSubmit" style="margin-bottom:15px;" class="btn waves-effect waves-light col s12 blue darken-1 waves-orange" type="button" name="action">Submit </button>
+                </div>
+            </div>
+            <div class="row col s12">
+                <center>
+                    <h5 class="blue-text"> <b>Consumer Grievance Summary</b></h5>
+                </center>
+                <table class="table striped">
+                    <tr>
+                        <th>Description</th>
+
+                        <th style="text-align:center">Value </th>
+
+                    </tr>
+
+                    <tr>
+                        <td>Total No. of Complaints</td>
+                        <td style="text-align:center">4231</td>
+
+                    </tr>
+
+                    <tr>
+                        <td>Total No. of  Open Complaintst</td>
+                        <td style="text-align:center">5239</td>
+
+                    </tr>
+                    <tr>
+                        <td>Total No. of Close Complaints</td>
+                        <td style="text-align:center">4231</td>
+
+                    </tr>
+                    <tr>
+                        <td>Total No. of Water Quality Complaints</td>
+                        <td style="text-align:center">10000</td>
+
+                    </tr>
+                    <tr>
+                        <td>Total No. of Meter Damage Complaints</td>
+                        <td style="text-align:center">5000 </td>
+
+                    </tr>
+                    <tr>
+                        <td>Total No. of Leakage Complaints</td>
+                        <td style="text-align:center">5000 </td>
+
+                    </tr>
+                    <tr>
+                        <td>Total No. of Pressure Releated Complaints</td>
+                        <td style="text-align:center">5000 </td>
+
+                    </tr>
+
+
+                </table>
+            </div>
+        </div>
+        <div class="row" id="tabWaterConsumptionSummary" style="margin-top:10px;">
+            <div class="col s4">
+                <select class="browser-default" id="selectcategory" style="color:black;border-bottom:solid thin #0089ec ;">
+                    <option value="0">Category Wise</option>
+                </select>
+            </div>
+            <div class="col s4">
+                <select class="browser-default" id="selectzone" style="color:black;border-bottom:solid thin #0089ec ;">
+                    <option value="0">Zone Wise</option>
+                </select>
+            </div>
+            <div class="col s4">
+                <select class="browser-default" id="selectsubzone" style="color:black;border-bottom:solid thin #0089ec ;">
+                    <option value="0">Sub-Zone Wise</option>
+                </select>
+            </div>
+            <div class="row">
+                <div class="col s4" style="margin-top:20px;">
+                    <input type="checkbox" class="example" id="chkSearchbyMeterNo" />
+                    <label for="chkSearchbyMeterNo">
+                        Meter No
+                    </label>
+                </div>
+                <div class="col s4" style="margin-top:20px;">
+                    <input type="checkbox" class="example" id="chkSearchbyName" />
+                    <label for="chkSearchbyName">
+                        Name
+                    </label>
+
+                </div>
+                <div class="col s4" style="margin-top:20px;">
+                    <input type="checkbox" class="example" id="chkSearchbyKWCNo" />
+                    <label for="chkSearchbyKWCNo">
+                        KWC No
+                    </label>
+                </div>
+                <div style="margin-top:20px;">
+                    <div class="row" style="margin-top:20px;">
+                        <div class=" col s12">
+                            <div class="input-field">
+                                <input id="SearchKeyWord" type="text" class="validate" />
+                                <label for="last_name">Search KeyWord</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+
+                    <div class="input-field col s6">
+                        <button id="btnCancel" style="margin-bottom:15px;" class="btn waves-effect waves-light col s12 blue darken-1 waves-orange" type="button" name="action"> Clear Filter</button>
+                    </div>
+                    <div class="input-field col s6">
+                        <button id="btnSubmit" style="margin-bottom:15px;" class="btn waves-effect waves-light col s12 blue darken-1 waves-orange" type="button" name="action">Submit </button>
+                    </div>
+
+                </div>
+                <div class="row col s12">
+                    <center>
+                        <h5 class="blue-text"> <b>Water Consumption Summary</b></h5>
+                    </center>
+                    <table class="table striped">
+                        <tr>
+                            <th>Description</th>
+
+                            <th style="text-align:center">Value </th>
+
+                        </tr>
+
+                        <tr>
+                            <td>Total Amount Of Water Consumed in (KL)</td>
+                            <td style="text-align:center">4231</td>
+
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <!-- Modal Structure -->
+
+            <div id="modal1" class="modal">
+                <div class="modal-content">
+                    <span><i class="fa fa-exclamation-triangle yellow-text left" style="font-size:medium;"></i></span>
+                    <span class="teal-text">Are you sure to logout?</span>
+                </div>
+                <div class="modal-footer">
+                    <a href="#!" class=" modal-action teal white-text modal-close waves-effect waves-green btn-flat">No</a>
+                    <a href="#!" id="btnOut" class=" modal-action red white-text modal-close  waves-effect waves-green btn-flat left">Yes</a>
+                </div>
+            </div>
+        </div>
+        </div>
+    </form>
+
+</body>
+</html>
